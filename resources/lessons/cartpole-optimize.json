@@ -1,0 +1,88 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "cartpole-optimize",
+  "title": "Tuning by search",
+  "simulator": "cartpole",
+  "order": 31,
+  "summary": "Let the Analyze ▸ Optimize tab tune an LQR balancer: fastest recovery within a motor's force budget, and what happens when the goal leaves something out.",
+  "steps": [
+    {
+      "title": "Fast costs force",
+      "text": "The LQR balancer recovers from a 5° tilt in under a second, but it pushes with up to 6.8 N. Suppose the motor can only give 5 N without overheating.\n\nThe weight r prices the force: raise it and the controller pushes more gently, but recovers more slowly. Run the default to see the starting point.",
+      "setup": { "preset": "LQR: balance and return", "tab": "Control force" },
+      "check": {
+        "kind": "metric", "quantity": "Settling time (θ within 1°)", "min": 0.8, "max": 1,
+        "hint": "Load the setup and press Run.",
+        "success": "0.89 s with 6.8 N. Now find the fastest recovery that stays within 5 N."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Search for r",
+      "text": "You could try values of r by hand. The Analyze ▸ Optimize tab does it for you: it is set to vary r between 0.01 and 10 and minimize the settling time, keeping Max |F| at or below 5 N.\n\nPress Optimize. Each point on its plot is one simulation.",
+      "setup": {
+        "preset": "LQR: balance and return",
+        "optimize": {
+          "inputs": ["r"], "metric": "Settling time (θ within 1°)", "goal": "minimize",
+          "bounds": [[0.01, 10]],
+          "constraint": { "metric": "Max |F|", "type": "<=", "value": 5 }
+        },
+        "tab": "Optimize"
+      },
+      "check": {
+        "kind": "optimize", "inputs": ["r"], "metric": "Settling time (θ within 1°)",
+        "input": "r", "min": 0.2, "max": 0.45,
+        "hint": "Press Optimize in the Analyze ▸ Optimize tab and let it finish.",
+        "success": "r ≈ 0.29: 1.05 s using 4.93 N. The best point sits right on the force limit: faster recovery always takes more force, so the search pushes r down until the limit stops it."
+      },
+      "solution": { "optimize": true }
+    },
+    {
+      "title": "Two knobs",
+      "text": "Now let the search vary two weights: qx, how much the controller cares about the cart's position, and r. Same goal, same 5 N limit.\n\nPress Optimize. Does it beat 1.05 s?",
+      "setup": {
+        "preset": "LQR: balance and return",
+        "optimize": {
+          "inputs": ["qx", "r"], "metric": "Settling time (θ within 1°)", "goal": "minimize",
+          "bounds": [[0.1, 100], [0.01, 10]],
+          "constraint": { "metric": "Max |F|", "type": "<=", "value": 5 }
+        },
+        "tab": "Optimize"
+      },
+      "check": {
+        "kind": "optimize", "inputs": ["qx", "r"], "metric": "Settling time (θ within 1°)", "max": 0.7,
+        "hint": "Press Optimize and wait for it to finish (about 60 runs).",
+        "success": "About 0.47 s, and with only 2.4 N! The search drove qx to the bottom of its range. That looks too good: what did it give up?"
+      },
+      "solution": { "optimize": true }
+    },
+    {
+      "title": "Watch the cart",
+      "text": "Press \"Apply best inputs\" in the Analyze ▸ Optimize tab, then run. Watch the cart in the Angle and position tab, and read the Largest cart excursion in the Summary (0.15 m with r ≈ 0.29 alone, 0.13 m at the defaults).",
+      "setup": { "tab": "Angle and position" },
+      "check": {
+        "kind": "metric", "quantity": "Largest cart excursion", "min": 0.3,
+        "hint": "Use the best inputs (qx ≈ 0.1, r ≈ 2.5) and run.",
+        "success": "The cart wanders about 0.45 m, three times as far, and is still 0.16 m off target after 8 s."
+      },
+      "solution": { "params": { "qx": 0.1014, "r": 2.479 }, "run": true }
+    },
+    {
+      "title": "You get what you ask for",
+      "text": "Why did the search make qx so small?",
+      "check": {
+        "kind": "choice",
+        "options": [
+          "The settling time only watches the angle, so caring less about the cart freed the controller to straighten the pole",
+          "A small qx makes the pole lighter, so it is easier to balance",
+          "The search went wrong; with more runs it would raise qx"
+        ],
+        "answer": 1,
+        "hint": "Which quantity was the search told to make small, and what does it measure?",
+        "success": "An optimizer finds the best answer to the question you asked, loopholes included. To keep the cart home, put it in the question: a limit on Largest cart excursion, or a goal that includes it."
+      },
+      "solution": { "answer": 1 }
+    }
+  ]
+}

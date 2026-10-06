@@ -1,0 +1,53 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "wave-standing",
+  "title": "Standing waves and harmonics",
+  "simulator": "wave",
+  "order": 9,
+  "summary": "Find a string's pitch, see how the pluck point picks the harmonics, and hear why a ruler doesn't sound like a guitar.",
+  "steps": [
+    {
+      "title": "The fundamental",
+      "text": "A string fixed at both ends vibrates in standing waves. The lowest, the fundamental, has frequency\n\n    f₁ = c / 2L,   c = √(T / ρ)\n\nFor this guitar string (65 cm, 70 N, 0.6 g/m) that is about 263 Hz, middle C. Run it and read the Fundamental frequency in the Summary.",
+      "setup": { "preset": "Guitar string (pluck near the bridge)", "tab": "Animation" },
+      "check": { "kind": "metric", "quantity": "Fundamental frequency", "min": 260, "max": 266, "success": "262.7 Hz: c = 342 m/s over twice the length." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Where you pluck matters",
+      "text": "The overtones of a string are harmonics: 2f₁, 3f₁, … How strongly each one sounds depends on where you pluck. Pluck exactly in the middle and run: the Mode content tab shows that the even modes are missing, because the middle is a node (a point that never moves) of every even mode.",
+      "setup": { "preset": "Pluck at the middle (odd harmonics)", "tab": "Mode content" },
+      "check": { "kind": "metric", "quantity": "Mode 2 energy share", "max": 0.01, "hint": "Set the position to 0.5 and run.", "success": "No second harmonic: a middle pluck sounds hollow." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Missing the fifth",
+      "text": "Now pluck at one fifth of the length (Position 0.2). Which mode goes missing this time? Run and check the Mode content tab.",
+      "setup": { "params": { "position": 0.2 } },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "position", "min": 0.19, "max": 0.21 },
+          { "kind": "metric", "quantity": "Mode 5 energy share", "max": 0.01 }
+        ],
+        "success": "Mode 5 has a node at L/5, so plucking there cannot excite it (nor modes 10, 15, …)."
+      },
+      "solution": { "params": { "position": 0.2 }, "run": true }
+    },
+    {
+      "title": "A ruler is not a guitar",
+      "text": "A ruler hanging over a table edge is a cantilever beam. It resists through bending stiffness instead of tension, so its overtones are not whole multiples of the fundamental. Run the ruler and look at f2 / f1 in the Summary and the Mode shapes tab.",
+      "setup": { "preset": "Cantilever beam (a ruler)", "tab": "Mode shapes" },
+      "check": { "kind": "metric", "quantity": "f2 / f1", "min": 6.1, "max": 6.4, "success": "6.27, not 2: that is why a twanged ruler buzzes rather than rings." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Damping",
+      "text": "Real strings lose energy. Back on the guitar string, set the damping ratio to 2 % and run: the Energy tab shows the vibration dying away.",
+      "setup": { "preset": "Guitar string (pluck near the bridge)", "params": { "zeta": 2 }, "tab": "Energy" },
+      "check": { "kind": "metric", "quantity": "Energy remaining at the end", "max": 50, "success": "Most of the energy is gone within a few hundredths of a second." },
+      "solution": { "params": { "zeta": 2 }, "run": true }
+    }
+  ]
+}

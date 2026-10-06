@@ -1,0 +1,70 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "dcmotor-servo",
+  "title": "Tuning a servo",
+  "simulator": "dcmotor",
+  "order": 21,
+  "summary": "From a motor's time constant to a position servo: proportional gain and overshoot, derivative damping, an integral against a load, and windup at the supply limit.",
+  "steps": [
+    {
+      "title": "The motor's time constant",
+      "text": "Apply a 12 V step to the motor alone. The back-EMF K ω grows with the speed and eats into the voltage, so the speed rises like a first-order system and levels off at K V / (K² + b R).\n\nThe time constant is τ = J R / (K² + b R): about 0.2 s for this motor. Run it and read Time to 63 % in the Summary (the armature inductance adds a few milliseconds).",
+      "setup": { "preset": "Open loop: voltage step", "tab": "Angle and speed" },
+      "check": { "kind": "metric", "quantity": "Time to 63 %", "min": 0.18, "max": 0.22, "success": "τ ≈ 0.2 s, and about 1120 rpm at 12 V. The Poles tab shows the same thing as a pole at −1/τ ≈ −5.2 per second, with the electrical pole far to the left at about −395." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Position control: proportional gain",
+      "text": "Now close the loop on the angle: V = Kp (θ_ref − θ), here with Kp = 5 V/rad and a 90° step. The motor's own damping is weak, so the closed loop is a lightly damped second-order system.\n\nRun it and watch the Animation: the pointer swings past the reference and rings. The Poles tab shows the closed-loop pair and its damping ratio ζ.",
+      "setup": { "preset": "Position P (oscillatory)", "tab": "Angle and speed" },
+      "check": { "kind": "metric", "quantity": "Overshoot", "min": 50, "success": "About 65 % overshoot. The closed-loop pair has ζ ≈ 0.14, for which e^(−πζ/√(1−ζ²)) predicts 64 %; the fast electrical pole adds a little. Raising Kp makes it faster but even less damped." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Add derivative",
+      "text": "A derivative term, −Kd ω, brakes the motor in proportion to its speed. It adds damping without changing ω_n: 2 ζ ω_n = (K²/R + b + K Kd / R) / J.\n\nSet Kd so the overshoot falls below 5 % (Kd = 0.4 V·s/rad gives ζ ≈ 0.8) and run.",
+      "setup": { "preset": "Position P (oscillatory)", "tab": "Angle and speed" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "Kd", "min": 0.1 },
+          { "kind": "metric", "quantity": "Overshoot", "max": 5 }
+        ],
+        "hint": "Try Kd = 0.4.",
+        "success": "Well damped, and settled in a fraction of the time. The PD preset raises Kp to 10 as well, for a faster response."
+      },
+      "solution": { "params": { "Kd": 0.4 }, "run": true }
+    },
+    {
+      "title": "A load needs an integral",
+      "text": "Hang a 0.1 N·m load on the shaft at 0.2 s while the PD servo holds 0°. To carry the load the motor needs a current τ / K, so a voltage, and a PD controller only makes a voltage from an error: it settles with θ off by τ R / (K Kp) ≈ 11.5°.\n\nRun it and see the error in the Error and power tab. Then add an integral (Ki = 50 V/(rad·s)) and run again.",
+      "setup": { "preset": "Load torque disturbance (PID)", "params": { "Ki": 0 }, "tab": "Error and power" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "Ki", "min": 10 },
+          { "kind": "metric", "quantity": "Final error", "max": 0.5 }
+        ],
+        "hint": "Set Ki to 50 and run.",
+        "success": "The integral keeps growing until the error is gone: it ends up holding exactly the voltage the load needs."
+      },
+      "solution": { "params": { "Ki": 50 }, "run": true }
+    },
+    {
+      "title": "Saturation and windup",
+      "text": "Ask the PID servo for a full turn with only 12 V. The command saturates for about 0.14 s, and all that time the integral keeps adding up the large error: it winds up, and has to unwind past the target. Run it: almost 50 % overshoot.\n\nSwitch Anti-windup to Clamping, which holds the integral while the voltage is saturated and the error would push it further, and run again.",
+      "setup": { "preset": "PID, saturated: windup", "tab": "Voltage and current" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "antiWindup", "value": "clamping" },
+          { "kind": "metric", "quantity": "Overshoot", "max": 20 }
+        ],
+        "hint": "Choose Clamping under Anti-windup and run.",
+        "success": "About 13 % instead of 49 %. Tick Keep previous runs and compare the two in the Angle and speed tab: same gains, same motor, only the integral's behaviour while saturated differs."
+      },
+      "solution": { "params": { "antiWindup": "clamping" }, "run": true }
+    }
+  ]
+}

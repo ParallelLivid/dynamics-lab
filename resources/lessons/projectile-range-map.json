@@ -1,0 +1,69 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "projectile-range-map",
+  "title": "A map of range",
+  "simulator": "projectile",
+  "order": 30,
+  "summary": "Map the range over launch speed and angle at once: a straight 45° ridge in a vacuum, and a ridge that bends lower when air resistance joins in.",
+  "steps": [
+    {
+      "title": "Two inputs at once",
+      "text": "A sweep varies one input. The Analyze ▸ Map tab varies two together and colours every result over the grid.\n\nThe setup maps launch speed from 10 to 60 m/s against launch angle from 25° to 60°: 90 throws, without air resistance. Press Run map and choose Range. The largest value is marked.",
+      "setup": {
+        "preset": "Defaults",
+        "params": { "findOptimal": false },
+        "map": {
+          "x": { "name": "v0", "from": 10, "to": 60, "steps": 6 },
+          "y": { "name": "theta", "from": 25, "to": 60, "steps": 15 }
+        },
+        "tab": "Map"
+      },
+      "check": {
+        "kind": "map", "x": "v0", "y": "theta", "minRuns": 80,
+        "quantity": "Range", "min": 360, "max": 372,
+        "hint": "Press Run map in the Analyze ▸ Map tab.",
+        "success": "367 m at 60 m/s and 45°: v₀²/g. The colours grow fast to the right because range goes as the square of the speed, but the best angle is 45° at every speed: a straight ridge."
+      },
+      "solution": { "map": true }
+    },
+    {
+      "title": "Now with air",
+      "text": "Switch the model to \"With drag\" (a sphere of 5 cm radius and 1 kg) and run the same map again.\n\nDrag grows with the square of the speed, so it matters little for a gentle lob and a lot for a fast throw. Follow the ridge from left to right: where is the best angle now?",
+      "setup": {
+        "params": { "model": "sphere", "findOptimal": false },
+        "map": {
+          "x": { "name": "v0", "from": 10, "to": 60, "steps": 6 },
+          "y": { "name": "theta", "from": 25, "to": 60, "steps": 15 }
+        },
+        "tab": "Map"
+      },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "model", "value": "sphere", "hint": "Set the Model to With drag." },
+          { "kind": "map", "x": "v0", "y": "theta", "minRuns": 80, "quantity": "Range", "max": 250,
+            "hint": "Run the map again with drag on." }
+        ],
+        "success": "Only 232 m at best, against 367 m in a vacuum. At 10 to 30 m/s the ridge stays near 45°; at 40 m/s and above it slides down to about 42.5°."
+      },
+      "solution": { "params": { "model": "sphere" }, "map": true }
+    },
+    {
+      "title": "Which way does it bend?",
+      "text": "Compare the two maps. With drag, which way does the best launch angle move, and when?",
+      "check": {
+        "kind": "choice",
+        "options": [
+          "Down, and more so the faster the throw",
+          "Up, and more so the faster the throw",
+          "It stays at 45°; only the range shrinks"
+        ],
+        "answer": 1,
+        "hint": "Look at where the ridge sits at 60 m/s.",
+        "success": "Down. A high, slow arc spends a long time in the air for drag to work on; a flatter, faster throw loses less. The faster (or lighter) the ball, the stronger drag is against gravity, and the lower the best angle."
+      },
+      "solution": { "answer": 1 }
+    }
+  ]
+}

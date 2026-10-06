@@ -1,0 +1,62 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "handling-understeer",
+  "title": "Understeer and oversteer",
+  "simulator": "handling",
+  "order": 22,
+  "summary": "Steer a car on the bicycle model: the neutral car, the understeer gradient and the steady yaw gain, oversteer and the critical speed, a lane change, and the tyre limit.",
+  "steps": [
+    {
+      "title": "The neutral car",
+      "text": "The bicycle model lumps each axle's two tyres into one. A tyre pushes sideways in proportion to its slip angle α, the angle between where the wheel points and where it is going: F = −C α.\n\nThis car has its centre of mass halfway between the axles and the same tyres front and rear, so both axles slip by the same angle: it is neutral steer. Run the step steer and read the steady-state yaw-rate gain r/δ in the Summary. For a neutral car it is V/L, the speed over the wheelbase, just as if the tyres did not slip at all.",
+      "setup": { "preset": "Neutral steer: step steer", "tab": "Yaw rate and lateral acceleration" },
+      "check": { "kind": "metric", "quantity": "Steady-state yaw-rate gain", "min": 8.1, "max": 8.4, "success": "r/δ = V/L = 22.2 / 2.7 = 8.23 per second: every degree of steering turns the car 8.2 °/s." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Understeer and the steady yaw gain",
+      "text": "A family car carries more weight on its front wheels, so its front tyres must slip more to hold their share: it understeers. The understeer gradient K = (m/L)(b/C_f − a/C_r) measures this (about 3 °/g here: each g of lateral acceleration needs 3° more steering than the neutral car).\n\nThe steady yaw gain becomes r/δ = V / (L + K V²): below V/L, and it stops growing at the characteristic speed √(L/K). Look at the Yaw gain vs speed tab, then set the speed near the characteristic speed (about 80 km/h) and run.",
+      "setup": { "preset": "Family car (understeer): step steer", "tab": "Yaw gain vs speed" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "speed", "min": 70, "max": 90 },
+          { "kind": "metric", "quantity": "Steady-state yaw-rate gain", "min": 4.0, "max": 4.2 }
+        ],
+        "hint": "Set the speed to 80 km/h and run.",
+        "success": "At the characteristic speed the gain is V/(2L), half the neutral car's. Faster, an understeering car turns less for the same steering: it is stable, and it warns the driver by pushing wide."
+      },
+      "solution": { "params": { "speed": 80 }, "run": true }
+    },
+    {
+      "title": "Oversteer and the critical speed",
+      "text": "Move the weight back and soften the rear tyres, and K turns negative: oversteer. The yaw gain is now above V/L, and it grows without bound at the critical speed √(−L/K), about 97 km/h for this car. Above it the car is unstable: the smallest steering input, or a gust, makes it spin.\n\nThis car is stable at 70 km/h. Raise the speed to 100 km/h or more and run (watch the Animation and the Analyze ▸ Modes tab). Just above the critical speed the spin builds slowly: at 98 km/h it takes longer than the 6 s run.",
+      "setup": { "preset": "Oversteer, below the critical speed (70 km/h)", "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "speed", "min": 100 },
+          { "kind": "metric", "quantity": "Spun out", "min": 1 }
+        ],
+        "hint": "Set the speed to 120 km/h and run.",
+        "success": "One mode in the Analyze ▸ Modes tab has turned unstable (a positive real root): the car spins with no further input. Cars are designed to understeer for this reason."
+      },
+      "solution": { "params": { "speed": 120 }, "run": true }
+    },
+    {
+      "title": "A double lane change",
+      "text": "The moose test: swerve one lane to the left, then back, at 80 km/h. The steering is a list of custom points: steer left, right, centre, hold, then the same again the other way. Watch the arrows in the Animation: the velocity points slightly off the car's axis (the sideslip β), and the tyre forces swing from side to side.\n\nRun it and check that the car ends up going straight again.",
+      "setup": { "preset": "Double lane change (80 km/h)", "tab": "Path" },
+      "check": { "kind": "metric", "quantity": "Final heading", "min": -2, "max": 2, "success": "Back on course, after about half a g each way. Try the oversteering car's inputs (a = 1.5, b = 1.2, C_r = 75000) for comparison: it needs less steering and is livelier." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The tyre limit",
+      "text": "Real tyres cannot grip forever: the force saturates at μ times the load. With saturating tyres, ramp the steering up to 8° and see the lateral acceleration level off below μ g = 0.9 g. Open Sideslip and slip angles: the front tyres slip about twice as much as the rear. This car understeers at the limit: steering more only makes the front slide, and the car runs wide.",
+      "setup": { "preset": "Tyre limit: understeer (saturating tyres)", "tab": "Yaw rate and lateral acceleration" },
+      "check": { "kind": "metric", "quantity": "Peak lateral acceleration", "min": 0.8, "max": 0.9, "success": "About 0.86 g and levelling off, while the linear model would promise almost 1.3 g at 8°. In the yaw-rate plot, the dashed line is what linear tyres would give." },
+      "solution": { "run": true }
+    }
+  ]
+}

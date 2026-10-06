@@ -1,0 +1,75 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "flyby-slingshot",
+  "title": "The slingshot",
+  "simulator": "flyby",
+  "order": 23,
+  "summary": "How a planet speeds a spacecraft up without spending fuel: nothing gained in the planet's frame, a lot in the Sun's.",
+  "steps": [
+    {
+      "title": "In the planet's frame, nothing is gained",
+      "text": "A spacecraft climbing out from the Earth reaches Jupiter at 10.7 km/s relative to the planet (its excess speed v∞) and passes 277 000 km above the cloud tops, like Voyager 1. Run it and look at the Planet frame tab: a hyperbola that turns the path by almost 100°.\n\nGravity is conservative, so the spacecraft leaves Jupiter exactly as fast as it came. Read the Planet-frame speed change in the Summary.",
+      "setup": { "preset": "Jupiter assist (Voyager-like)", "tab": "Planet frame" },
+      "check": { "kind": "metric", "quantity": "Planet-frame speed change", "min": -0.001, "max": 0.001, "success": "Zero (to the integration's accuracy): seen from Jupiter, the flyby only turns the velocity." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Turning angle (integrated)", "value": 98.978, "tolerance": 0.001 }
+      ]
+    },
+    {
+      "title": "In the Sun's frame, the speed changes",
+      "text": "Jupiter itself moves at 13.06 km/s around the Sun. The spacecraft's velocity around the Sun is Jupiter's velocity plus v∞, so turning v∞ toward Jupiter's motion adds to it. Open the Velocity diagram: the two v∞ arrows are the same length, but the heliocentric arrows are not.\n\nHow much faster does the spacecraft leave?",
+      "setup": { "preset": "Jupiter assist (Voyager-like)", "tab": "Velocity diagram" },
+      "check": { "kind": "metric", "quantity": "Speed gained", "min": 5, "success": "About 11.3 km/s, from 12.05 to 23.36 km/s: more than the 18.5 km/s needed to leave the Sun. Jupiter pays with the same momentum: for Voyager's 722 kg it slows by about 6 × 10⁻²¹ m/s." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Speed gained", "value": 11.3096, "tolerance": 0.005 },
+        { "kind": "metric", "quantity": "Heliocentric speed before", "value": 12.0524, "tolerance": 0.005 },
+        { "kind": "metric", "quantity": "Heliocentric speed after", "value": 23.362, "tolerance": 0.005 }
+      ]
+    },
+    {
+      "title": "Closer passes turn more",
+      "text": "The turning angle is δ = 2 asin(1 / (1 + r_p v∞²/μ)): the closer the pass (smaller r_p), the larger the turn. Lower the periapsis altitude to 50 000 km or less and run. Compare the turning angle and the speed gained with the first run.",
+      "setup": { "preset": "Jupiter assist (Voyager-like)", "tab": "Planet frame" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "altitude", "max": 50000 },
+          { "kind": "metric", "quantity": "Turning angle (integrated)", "min": 120 }
+        ],
+        "success": "Over 125°: the planet bends the path harder. The Δv the planet gives, 2 v∞ sin(δ/2), grows with it."
+      },
+      "solution": { "params": { "altitude": 20000 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Turning angle (integrated)", "min": 125 }
+      ]
+    },
+    {
+      "title": "Behind gains, ahead loses",
+      "text": "Passing behind the planet (its trailing side), the spacecraft is pulled forward along the planet's motion. Passing ahead of it, the pull is backward. Switch the Pass to Ahead and run.",
+      "setup": { "preset": "Jupiter assist (Voyager-like)", "tab": "Heliocentric speed" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "pass", "value": "ahead" },
+          { "kind": "metric", "quantity": "Speed gained", "max": 0 }
+        ],
+        "success": "The same turn, the other way round: now the spacecraft slows down. Missions to Mercury (MESSENGER, BepiColombo) use such flybys to fall toward the Sun."
+      },
+      "solution": { "params": { "pass": "ahead" }, "run": true }
+    },
+    {
+      "title": "The orbit grows",
+      "text": "Galileo, too heavy to reach Jupiter directly, flew past Venus once and the Earth twice. Load the Earth flyby: a spacecraft on an orbit from 0.70 to 1.27 AU passes 960 km above the Earth, behind it. Run it and look at the Heliocentric orbits tab.",
+      "setup": { "preset": "Earth flyby gaining speed (Galileo-like)", "tab": "Heliocentric orbits" },
+      "check": { "kind": "metric", "quantity": "Aphelion after", "min": 2, "success": "The aphelion jumps from 1.27 to 2.74 AU, past Mars, without a gram of fuel. A second Earth flyby two years later sent Galileo on to Jupiter." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Aphelion before", "value": 1.2741, "tolerance": 0.005 },
+        { "kind": "metric", "quantity": "Aphelion after", "value": 2.7391, "tolerance": 0.005 }
+      ]
+    }
+  ]
+}

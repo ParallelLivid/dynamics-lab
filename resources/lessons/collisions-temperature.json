@@ -1,0 +1,46 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "collisions-temperature",
+  "title": "From collisions to temperature",
+  "simulator": "collisions",
+  "order": 15,
+  "summary": "One collision conserves momentum and energy; many collisions make a gas with a temperature, a pressure, and Brownian motion.",
+  "steps": [
+    {
+      "title": "One collision",
+      "text": "A ball hits an equal ball at rest, off-centre. Momentum is conserved, and in an elastic collision (e = 1) so is kinetic energy. For equal masses, together they force the two balls to leave at right angles: the struck ball along the line of centres, the other across it. Run it, watch the Animation, and read the angle between the paths in the Summary.",
+      "setup": { "preset": "Two-ball oblique", "tab": "Animation" },
+      "check": { "kind": "metric", "quantity": "Angle between the paths after", "min": 89.999, "max": 90.001, "success": "90°, and the Energy drift is zero to rounding: the collision is solved exactly, not stepped." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A gas finds its distribution",
+      "text": "Now 100 discs, all starting at the same speed (1 m/s) in random directions. Every collision shares out energy differently, and the speeds spread out. Run it and open the Speed distribution tab: the histogram of the second half of the run matches the 2-D Maxwell–Boltzmann distribution\n\n    f(v) = (m v / kT) exp(−m v² / 2kT)\n\nwhere kT is the mean kinetic energy per disc: the temperature.",
+      "setup": { "preset": "Gas: relaxation to Maxwell", "tab": "Speed distribution" },
+      "check": { "kind": "metric", "quantity": "KS distance from Maxwell", "max": 0.08, "success": "The gas forgot how it started: that is what thermal equilibrium means." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Pressure",
+      "text": "Each wall hit pushes on the wall; averaged over time, that is the pressure. An ideal gas (point particles) has P = N kT / A. These discs fill 39 % of the box: they have less room to move in, and a collision passes momentum across a whole diameter at once, so they push harder. Run the dense gas and compare in the Pressure tab.",
+      "setup": { "preset": "Dense gas (pressure vs ideal)", "tab": "Pressure" },
+      "check": { "kind": "metric", "quantity": "Pressure ratio P / P_ideal", "min": 2.5, "max": 3.3, "success": "About 3 times the ideal gas: within a few percent of Henderson's equation of state for hard discs (the walls of a box this small add a little)." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Brownian motion",
+      "text": "Put a big, heavy disc in the gas. It is too heavy to move much on any one hit, but the uneven kicks add up to a random walk, which is what Robert Brown saw tiny particles from pollen grains do in water in 1827. Here the box is periodic (a disc leaving one side comes back in on the other), so no wall stops the walk. The Tracer tab shows its path and its mean-square displacement: curved at first, while the disc still remembers its velocity, then a straight line of slope 4 D.",
+      "setup": { "preset": "Brownian motion (heavy tracer)", "tab": "Tracer" },
+      "check": { "kind": "metric", "quantity": "Diffusion coefficient", "min": 1e-9, "success": "Einstein showed in 1905 that D = kT / (friction) can count molecules, and Perrin did it in 1908. One tracer over one minute gives D only to within tens of percent: try another seed." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Inelastic cooling",
+      "text": "Make every disc collision lose a little energy (e = 0.9: the discs part at 0.9 of the speed they met with, so each collision loses 19 % of the energy of that approach) and run. The gas cools, quickly at first and then ever more slowly, because cooler discs meet less often (Haff's law: T = T₀ / (1 + t/t₀)²). In a larger box, given time, the slow discs start to clump together: a granular gas, like sand or planetary rings.",
+      "setup": { "preset": "Inelastic cooling (e = 0.9)", "tab": "Energy and momentum" },
+      "check": { "kind": "metric", "quantity": "Energy lost", "min": 50, "success": "Most of the energy is gone, as Haff's law predicts (about 98 % in 10 s here)." },
+      "solution": { "run": true }
+    }
+  ]
+}

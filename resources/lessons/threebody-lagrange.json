@@ -1,0 +1,67 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "threebody-lagrange",
+  "title": "Lagrange points and forbidden regions",
+  "simulator": "threebody",
+  "order": 16,
+  "summary": "Five places where a small body can sit still beside two big ones, which of them are stable, and the energy walls that fence an orbit in.",
+  "steps": [
+    {
+      "title": "Five balance points",
+      "text": "In a frame turning with the Earth and the Moon, there are five points where gravity and the centrifugal force cancel: L1 between them, L2 beyond the Moon, L3 beyond the Earth, and L4 and L5 at the corners of equilateral triangles.\n\nThis preset orbits L1. Open the Analyze ▸ Modes tab (linearized about L1): two of its modes make a saddle, one growing and one decaying, so a body at L1 drifts away exponentially. Run it for three of its periods and watch the orbit unravel during the second loop.",
+      "setup": { "preset": "Planar Lyapunov orbit at L1", "params": { "tspan": 16.4574743748 }, "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "Saddle, growing direction", "success": "L1, L2, and L3 are all saddles: spacecraft parked there must keep correcting." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The forbidden region",
+      "text": "The Jacobi constant C = 2Ω − v² is conserved, so the body can only be where 2Ω ≥ C. The Trajectory tab shades the forbidden region. The more energy, the lower C and the smaller that region.\n\nSlow the body down: set ẏ₀ to 0.03 and run. C rises above its value at L1 (3.188, in the Summary), and the forbidden region closes the neck at L1: the body can no longer pass between the Earth and the Moon.",
+      "setup": { "preset": "Planar Lyapunov orbit at L1", "tab": "Trajectory" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "vy0", "max": 0.031 },
+          { "kind": "metric", "quantity": "Jacobi constant", "min": 3.1884 }
+        ],
+        "hint": "Set ẏ₀ to 0.03 and run.",
+        "success": "The neck is closed: with this little energy the body is trapped on the Earth's side."
+      },
+      "solution": { "params": { "vy0": 0.03 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "C at L1", "value": 3.18834, "tolerance": 0.0005 }
+      ]
+    },
+    {
+      "title": "L4 is stable",
+      "text": "Now L4, 60° ahead of the Moon. Load the tadpole orbit and look at the Analyze ▸ Modes tab: every mode is an oscillation, so a body nudged away from L4 swings around it instead of leaving. Run it: the path traces a tadpole shape around L4.",
+      "setup": { "preset": "Tadpole orbit at L4", "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "In-plane oscillation", "success": "Stable: Jupiter's Trojan asteroids have gathered at its L4 and L5 for billions of years." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Unless the second body is too heavy",
+      "text": "L4 is only stable when the smaller primary has less than 3.85 % of the total mass (Routh's criterion). The Moon has 1.2 %. Choose Custom primaries with a mass ratio of 0.05 and check the Analyze ▸ Modes tab again.",
+      "setup": { "preset": "Tadpole orbit at L4", "params": { "system": "custom", "mu": 0.05 }, "tab": "Modes" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "mu", "min": 0.04 },
+          { "kind": "modes", "mode": "Growing oscillation (unstable)" }
+        ],
+        "success": "Now a mode grows while it oscillates: L4 has become unstable."
+      },
+      "solution": { "params": { "system": "custom", "mu": 0.05 }, "run": true }
+    },
+    {
+      "title": "The Arenstorf orbit",
+      "text": "Richard Arenstorf found this periodic orbit in 1963, while working on Apollo trajectories: a spacecraft that loops around the Earth and the Moon and returns exactly to its start. Run it and check the Return error in the Summary.",
+      "setup": { "preset": "Arenstorf orbit (Earth–Moon)", "tab": "Trajectory" },
+      "check": { "kind": "metric", "quantity": "Return error", "max": 1e-4, "success": "Back where it started, to better than a millionth: a free return." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Return error", "max": 1e-06 }
+      ]
+    }
+  ]
+}

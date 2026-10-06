@@ -1,0 +1,392 @@
+[
+ {
+  "name": "home",
+  "mode": "home",
+  "frames": 120,
+  "scroll": 1500
+ },
+ {
+  "name": "pendulum",
+  "sim": "pendulum",
+  "preset": "Double: butterfly effect",
+  "tab": "Animation",
+  "mode": "anim",
+  "t0": 4,
+  "t1": 11,
+  "frames": 100
+ },
+ {
+  "name": "attractors",
+  "sim": "attractors",
+  "preset": "Lorenz butterfly (ρ = 28)",
+  "tab": "Animation",
+  "mode": "anim",
+  "t0": 12,
+  "t1": 40,
+  "frames": 100
+ },
+ {
+  "name": "collisions",
+  "sim": "collisions",
+  "preset": "Billiards break",
+  "tab": "Animation",
+  "mode": "anim",
+  "t0": 0.1,
+  "t1": 3.0,
+  "frames": 100
+ },
+ {
+  "name": "cartpole",
+  "sim": "cartpole",
+  "preset": "LQR: move the cart 1 m (reference step)",
+  "tab": "Animation",
+  "mode": "anim",
+  "t0": 0,
+  "t1": 4,
+  "frames": 100
+ },
+ {
+  "name": "quadrotor",
+  "sim": "quadrotor",
+  "preset": "Box waypoint mission",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 100
+ },
+ {
+  "name": "orbit",
+  "sim": "orbit",
+  "preset": "Molniya (Earth)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 100
+ },
+ {
+  "name": "flyby",
+  "sim": "flyby",
+  "preset": "Jupiter assist (Voyager-like)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 100
+ },
+ {
+  "name": "rocket",
+  "sim": "rocket",
+  "preset": "Small launcher to LEO (2 stages)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 100
+ },
+ {
+  "name": "attitude",
+  "sim": "attitude",
+  "preset": "Large three-axis slew (PD)",
+  "tab": "Animation",
+  "mode": "anim",
+  "t0": 0,
+  "t1": 120,
+  "frames": 100
+ },
+ {
+  "name": "truss",
+  "sim": "truss",
+  "preset": "Footbridge check (steel tubes)",
+  "tab": "Model",
+  "mode": "still"
+ },
+ {
+  "name": "frame",
+  "sim": "frame",
+  "preset": "Portal frame (wind load)",
+  "tab": "Bending moment",
+  "mode": "still"
+ },
+ {
+  "name": "membrane",
+  "sim": "membrane",
+  "preset": "Circular drum struck off-centre",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 100
+ },
+ {
+  "name": "plate",
+  "sim": "plate",
+  "preset": "Hot spot spreading",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 100,
+  "t0": 0,
+  "t1": 24
+ },
+ {
+  "name": "sweep",
+  "sim": "nonlinear",
+  "setup": {
+   "preset": "Driven pendulum: period-1",
+   "sweep": {
+    "parameter": "A",
+    "from": 0.9,
+    "to": 1.5,
+    "steps": 121
+   }
+  },
+  "action": "sweep",
+  "tab": "Sweep",
+  "dropdowns": [
+   "dlab.sweep.metric",
+   "Poincaré θ"
+  ],
+  "mode": "still"
+ },
+ {
+  "name": "map",
+  "sim": "projectile",
+  "setup": {
+   "preset": "Defaults",
+   "params": {
+    "findOptimal": false
+   },
+   "map": {
+    "x": {
+     "name": "v0",
+     "from": 10,
+     "to": 60,
+     "steps": 11
+    },
+    "y": {
+     "name": "theta",
+     "from": 10,
+     "to": 80,
+     "steps": 15
+    }
+   }
+  },
+  "action": "map",
+  "tab": "Map",
+  "mode": "still",
+  "dropdowns": [
+   "dlab.map.quantity",
+   "Range"
+  ]
+ },
+ {
+  "name": "modes",
+  "sim": "flight6dof",
+  "preset": "Straight flight",
+  "tab": "Modes",
+  "mode": "still"
+ },
+ {
+  "name": "bode",
+  "sim": "quartercar",
+  "setup": {
+   "preset": "Resonance: wheel hop",
+   "bode": {
+    "input": "Road height",
+    "output": "Tire deflection"
+   }
+  },
+  "tab": "Bode",
+  "mode": "still"
+ },
+ {
+  "name": "optimize",
+  "sim": "cartpole",
+  "setup": {
+   "preset": "LQR: balance and return",
+   "optimize": {
+    "inputs": [
+     "qx",
+     "r"
+    ],
+    "metric": "Settling time (θ within 1°)",
+    "goal": "minimize",
+    "bounds": [
+     [
+      0.1,
+      100
+     ],
+     [
+      0.01,
+      10
+     ]
+    ],
+    "constraint": {
+     "metric": "Max |F|",
+     "type": "<=",
+     "value": 5
+    }
+   }
+  },
+  "action": "optimize",
+  "tab": "Optimize",
+  "mode": "still"
+ },
+ {
+  "name": "uncertainty",
+  "sim": "truss",
+  "setup": {
+   "preset": "Footbridge check (steel tubes)",
+   "uncertainty": {
+    "inputs": [
+     {
+      "name": "loadScale",
+      "kind": "normal",
+      "spread": 10,
+      "relative": true
+     },
+     {
+      "name": "strengthScale",
+      "kind": "normal",
+      "spread": 10,
+      "relative": true
+     }
+    ],
+    "samples": 200,
+    "seed": 1
+   }
+  },
+  "action": "uncertainty",
+  "tab": "Uncertainty",
+  "mode": "still",
+  "dropdowns": [
+   "dlab.uncertainty.quantity",
+   "tilization"
+  ]
+ },
+ {
+  "name": "lesson",
+  "sim": "pendulum",
+  "lesson": "pendulum-period",
+  "lessonStep": 1,
+  "lessonCheck": true,
+  "mode": "still"
+ },
+ {
+  "name": "theme_dark",
+  "sim": "membrane",
+  "preset": "Square drum struck off-centre",
+  "tab": "Mode shapes",
+  "mode": "still"
+ },
+ {
+  "name": "theme_light",
+  "sim": "membrane",
+  "theme": "light",
+  "preset": "Square drum struck off-centre",
+  "tab": "Mode shapes",
+  "mode": "still"
+ },
+ {
+  "name": "handling",
+  "sim": "handling",
+  "preset": "Double lane change (80 km/h)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "massspring",
+  "sim": "massspring",
+  "preset": "Beating (weak coupling)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "projectile",
+  "sim": "projectile",
+  "preset": "Golf drive with backspin",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "nonlinear",
+  "sim": "nonlinear",
+  "preset": "Driven pendulum: chaos (A = 1.5)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "rigidbody",
+  "sim": "rigidbody",
+  "preset": "Tennis racket (Dzhanibekov effect)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "dcmotor",
+  "sim": "dcmotor",
+  "preset": "Position PD (well damped)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "quartercar",
+  "sim": "quartercar",
+  "preset": "Passenger car over a speed bump (20 km/h)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "maneuvers",
+  "sim": "maneuvers",
+  "preset": "LEO to GEO (Hohmann)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "threebody",
+  "sim": "threebody",
+  "preset": "Figure-8 choreography",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "entry",
+  "sim": "entry",
+  "preset": "Apollo-like lunar return",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "flight6dof",
+  "sim": "flight6dof",
+  "preset": "Loop",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "wave",
+  "sim": "wave",
+  "preset": "Guitar string (pluck near the bridge)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "heat",
+  "sim": "heat",
+  "preset": "Hot spot spreading (insulated ends)",
+  "tab": "Animation",
+  "mode": "anim",
+  "frames": 60
+ },
+ {
+  "name": "column",
+  "sim": "column",
+  "preset": "Elastica far past buckling",
+  "tab": "Deflected shape",
+  "mode": "still"
+ }
+]

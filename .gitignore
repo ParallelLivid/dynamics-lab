@@ -1,0 +1,51 @@
+# MATLAB editor and autosave files
+*.asv
+*.autosave
+*.m~
+
+# MATLAB generated files
+*.mex*
+*.slxc
+slprj/
+sccprj/
+codegen/
+*.mlappinstall
+*.mltbx
+
+# Build, packaging, and test output
+build/
+dist/
+test-results/
+code-coverage/
+coverage/
+html/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+desktop.ini
+
+# MATLAB build tool cache
+.buildtool/
+
+# Verification screenshots (dlab.dev.captureVerification)
+/verification/
+
+# Development plans and history, kept locally and not published
+/docs/history/
+/docs/ROADMAP.md

@@ -1,0 +1,93 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "truss-uncertainty",
+  "title": "Uncertain loads",
+  "simulator": "truss",
+  "order": 33,
+  "summary": "A bridge with a safety factor of 1.3 meets crowds, and steel, that vary: a Monte Carlo study turns the margin into odds.",
+  "steps": [
+    {
+      "title": "A bridge with a margin",
+      "text": "This is the steel footbridge with its web posts upgraded to 76.1 mm tubes, so every member holds. Solve it and read the safety factor: how many times the design load the bridge can take before its first member reaches its limit.",
+      "setup": {
+        "preset": "Footbridge check (steel tubes)",
+        "params": { "sections": [[1, 1, 200, 250, 88.9, 4, 10.6688, 96.3398], [1, 1, 200, 250, 76.1, 3.2, 7.32868, 48.7785], [1, 1, 200, 250, 76.1, 3.2, 7.32868, 48.7785]] },
+        "tab": "Model"
+      },
+      "check": {
+        "kind": "metric", "quantity": "Safety factor", "min": 1.25, "max": 1.35,
+        "hint": "Load the setup and solve.",
+        "success": "1.30: the largest utilization is 0.77. But the 40 kN per node is a nominal crowd; a real one is heavier or lighter."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Scatter the load",
+      "text": "The Analyze ▸ Uncertainty tab solves the truss again and again with inputs drawn at random. It is set to vary the Load scale with a normal distribution, σ = 10 % of its value, over 100 samples.\n\nPress Run Monte Carlo and choose Largest utilization. The histogram shows how the utilization spreads; the table lists its mean, σ, and the 5th and 95th percentiles.",
+      "setup": {
+        "uncertainty": { "inputs": [{ "name": "loadScale", "kind": "normal", "spread": 10, "relative": true }], "samples": 100, "seed": 1 },
+        "tab": "Uncertainty"
+      },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "uncertainty", "inputs": ["loadScale"], "minRuns": 90, "quantity": "Largest utilization", "statistic": "Std", "min": 0.06, "max": 0.09 },
+          { "kind": "uncertainty", "inputs": ["loadScale"], "minRuns": 90, "quantity": "Largest utilization", "statistic": "P95", "min": 0.85, "max": 0.92 }
+        ],
+        "hint": "Press Run Monte Carlo in the Analyze ▸ Uncertainty tab.",
+        "success": "σ ≈ 0.073 on a mean of 0.78, and 95 % of the crowds stay below 0.88. The sensitivity bar gives the load the whole share: nothing else varies."
+      },
+      "solution": { "uncertainty": true }
+    },
+    {
+      "title": "Spend the margin",
+      "text": "How much heavier could the nominal crowd be? Raise the Load scale (in the inputs, not the tolerance table) and run the study again, until the 95th percentile of the largest utilization reaches 1: then one crowd in twenty overloads a member.",
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "loadScale", "min": 1.05 },
+          { "kind": "uncertainty", "inputs": ["loadScale"], "minRuns": 90, "quantity": "Largest utilization", "statistic": "P95", "min": 0.96, "max": 1.04,
+            "hint": "Try a Load scale of about 1.1, and run the study after each change." }
+        ],
+        "success": "About 1.13. The deterministic safety factor said 1.30, but with 10 % scatter only 13 % extra load is left for a 1-in-20 risk. Codes split the margin the same way: a factor on the load for its scatter, another on the strength for its own."
+      },
+      "solution": { "params": { "loadScale": 1.13 }, "uncertainty": true }
+    },
+    {
+      "title": "Why so tidy?",
+      "text": "The utilization's σ is about 10 % of its mean, like the load's, and the R² of the sensitivity fit is 1. Why?",
+      "check": {
+        "kind": "choice",
+        "options": [
+          "The truss is linear: every member force, and so every utilization, is proportional to the load",
+          "100 samples is too few to see any other effect",
+          "The normal distribution always gives a 10 % spread"
+        ],
+        "answer": 1,
+        "hint": "What did the Load scale's description say about the forces?",
+        "success": "Double the load, double every force: the utilization's histogram is the load's histogram, rescaled. Scatter in the steel's yield stress or in the tube sizes would add its own spread, and the sensitivity bars would then share the blame."
+      },
+      "solution": { "answer": 1 }
+    },
+    {
+      "title": "Scatter the strength too",
+      "text": "Steel is not exactly as strong as its nominal yield stress either. The Strength scale (under the Load scale) multiplies every member's yield stress and buckling load. The Load scale is back at 1, and the Analyze ▸ Uncertainty tab now varies both: normal, σ = 10 % each, over 100 samples.\n\nRun the study and choose Largest utilization. Compare its σ and 95th percentile with the load-only study, and read the sensitivity bars.",
+      "setup": {
+        "params": { "loadScale": 1, "strengthScale": 1 },
+        "uncertainty": { "inputs": [{ "name": "loadScale", "kind": "normal", "spread": 10, "relative": true }, { "name": "strengthScale", "kind": "normal", "spread": 10, "relative": true }], "samples": 100, "seed": 1 },
+        "tab": "Uncertainty"
+      },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "uncertainty", "inputs": ["loadScale", "strengthScale"], "minRuns": 90, "quantity": "Largest utilization", "statistic": "Std", "min": 0.095, "max": 0.13 },
+          { "kind": "uncertainty", "inputs": ["loadScale", "strengthScale"], "minRuns": 90, "quantity": "Largest utilization", "statistic": "P95", "min": 0.92, "max": 1.04 }
+        ],
+        "hint": "Press Run Monte Carlo in the Analyze ▸ Uncertainty tab, with both inputs in the tolerance table.",
+        "success": "σ ≈ 0.11, up from 0.073: independent scatters add as squares, so two 10 % ones give about √2 × 10 %. The sensitivity bars split the variance about evenly (load 47 %, strength 53 %): the utilization is load ÷ strength, so equal relative scatter gives equal shares, the strength a little more because 1/strength is slightly skewed (which is also why R² drops just below 1). The 95th percentile is now 0.97: with weak steel as likely as a heavy crowd, the 1.30 margin barely covers one case in twenty."
+      },
+      "solution": { "uncertainty": true }
+    }
+  ]
+}

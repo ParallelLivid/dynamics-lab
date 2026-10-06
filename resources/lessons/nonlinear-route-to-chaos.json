@@ -1,0 +1,57 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "nonlinear-route-to-chaos",
+  "title": "The route to chaos",
+  "simulator": "nonlinear",
+  "order": 11,
+  "summary": "From a limit cycle to period doubling and chaos: read Poincaré sections and draw a bifurcation diagram.",
+  "steps": [
+    {
+      "title": "A limit cycle",
+      "text": "The Van der Pol oscillator pumps energy in at small amplitude (negative damping for |x| < 1) and takes it out at large amplitude. Whatever the start, it settles on one closed loop in the phase plane: a limit cycle.\n\nRun it and look at the Phase portrait, then read the Limit-cycle amplitude in the Summary.",
+      "setup": { "preset": "Van der Pol: limit cycle", "tab": "Phase portrait" },
+      "check": { "kind": "metric", "quantity": "Limit-cycle amplitude", "min": 1.99, "max": 2.03, "success": "About 2, whatever the start: try x0 = 3 and the motion shrinks onto the same loop." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Period-1",
+      "text": "Now a damped pendulum driven by a torque A cos ωt (q = 2, ω = 2/3, as in Baker and Gollub's Chaotic Dynamics). A Poincaré section looks at the motion once per drive period, like a strobe light. If the motion repeats every period, the strobe always sees the same state: one point.\n\nRun A = 0.9 and open the Poincaré map.",
+      "setup": { "preset": "Driven pendulum: period-1", "tab": "Poincaré map" },
+      "check": { "kind": "metric", "quantity": "Distinct Poincaré points", "min": 1, "max": 1, "success": "One point: the motion repeats every drive period." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Period doubling",
+      "text": "Drive a little harder, A = 1.07, and run. The motion now takes two drive periods to repeat, and the strobe sees two points: a period-doubling bifurcation.",
+      "setup": { "preset": "Driven pendulum: period-1", "params": { "A": 1.07 }, "tab": "Poincaré map" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "A", "min": 1.06, "max": 1.08 },
+          { "kind": "metric", "quantity": "Distinct Poincaré points", "min": 2, "max": 2 }
+        ],
+        "success": "Two points: period-2. The Spectrum tab now has a peak at ω/2 too."
+      },
+      "solution": { "params": { "A": 1.07 }, "run": true }
+    },
+    {
+      "title": "Chaos",
+      "text": "At A = 1.5 the motion never repeats. The pendulum swings and goes over the top in an irregular pattern, and the strobe points fill a folded, fractal shape: a strange attractor. Run it and look at the Poincaré map and the Animation.",
+      "setup": { "preset": "Driven pendulum: chaos (A = 1.5)", "tab": "Poincaré map" },
+      "check": { "kind": "metric", "quantity": "Distinct Poincaré points", "min": 33, "success": "Every point is new: chaos. Change the start by 0.001 rad and the motion soon differs completely." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The bifurcation diagram",
+      "text": "Put it all together: the Analyze ▸ Sweep tab is set up to vary the drive from A = 0.9 to 1.5 in 121 steps. Run the sweep (it takes a minute or two) and plot \"Poincaré θ (all values)\": every run's section points above its value of A. Read it from left to right: one branch, a split into two near A = 1.07, and within about 0.02 chaos, with windows of order further on (period-1 near A = 1.35, then period-2 and period-4 again near 1.45 and 1.47). Every run starts from rest, so where two motions coexist the diagram shows the one reached from rest: at A = 1.08 a period-3 motion, rather than the period-4 that follows the period-2 when A is raised slowly.",
+      "setup": {
+        "preset": "Driven pendulum: period-1",
+        "sweep": { "parameter": "A", "from": 0.9, "to": 1.5, "steps": 121 },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "A", "minRuns": 100 },
+      "solution": { "sweep": true }
+    }
+  ]
+}

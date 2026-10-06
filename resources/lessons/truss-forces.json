@@ -1,0 +1,51 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "truss-forces",
+  "title": "Tension, compression, and stiffness",
+  "simulator": "truss",
+  "order": 6,
+  "summary": "See how a truss carries a load, and why a stiffer material changes the deflection but not the forces.",
+  "steps": [
+    {
+      "title": "Tension and compression",
+      "text": "A truss carries loads through members that are pulled (tension, red) or pushed (compression, blue). Solve the simple triangle, which has a 20 kN load at the top.\n\nThe two sloping members are in compression and the base is in tension. Why does each sloping member carry more than half of the load?",
+      "setup": { "preset": "Simple triangle", "tab": "Model" },
+      "check": {
+        "kind": "metric", "quantity": "Largest compression", "min": 11.4, "max": 11.7,
+        "hint": "Load the setup, then press Solve.",
+        "success": "Each sloping member leans at 60°, so only part of its force holds the load up: 20 kN / (2 sin 60°) = 11.5 kN. The base ties their outward push together."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A bridge truss",
+      "text": "The Pratt truss is a classic bridge design: diagonals in tension and verticals in compression. Solve it and look at the Model and Member forces tabs.",
+      "setup": { "preset": "Pratt truss (6-panel)", "tab": "Model" },
+      "check": { "kind": "metric", "quantity": "Largest tension", "min": 35.9, "max": 36.2, "success": "About 36 kN in the most loaded members." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Stiffer material",
+      "text": "Doubling Young's modulus E makes the truss twice as stiff. Open the Sections tab: every member uses section S1. Type 400 into its E (GPa) (the material becomes Custom), and solve again.\n\nThe largest displacement halves to about 0.116 mm, but the member forces do not change: this truss is statically determinate, so equilibrium alone sets the forces.",
+      "setup": { "preset": "Pratt truss (6-panel)", "tab": "Model" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "metric", "quantity": "Largest displacement", "max": 0.12 },
+          { "kind": "metric", "quantity": "Largest tension", "min": 35.9, "max": 36.2 }
+        ],
+        "hint": "Sections tab: set S1's E to 400, then Solve.",
+        "success": "Half the deflection, the same forces."
+      },
+      "solution": { "params": { "sections": [[4, 5, 400, 250, 0, 0, 100, 8820]] }, "run": true }
+    },
+    {
+      "title": "Forces in proportion",
+      "text": "The truss is linear: double every load and every force doubles. Sweep the Load scale from 0.5 to 4 (the Analyze ▸ Sweep tab is set up) and plot Largest tension: a straight line through the origin.",
+      "setup": { "preset": "Pratt truss (6-panel)", "sweep": { "parameter": "loadScale", "from": 0.5, "to": 4, "steps": 8 }, "tab": "Sweep" },
+      "check": { "kind": "sweep", "parameter": "loadScale", "minRuns": 6 },
+      "solution": { "sweep": true }
+    }
+  ]
+}

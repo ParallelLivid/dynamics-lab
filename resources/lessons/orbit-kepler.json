@@ -1,0 +1,52 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "orbit-kepler",
+  "title": "Kepler's third law",
+  "simulator": "orbit",
+  "order": 4,
+  "summary": "See how an orbit's period depends on its size, from low Earth orbit to geostationary and Molniya orbits.",
+  "steps": [
+    {
+      "title": "Low Earth orbit",
+      "text": "The default orbit is about 400 km above Earth, with semi-major axis a = 6778 km. Kepler's third law gives its period:\n\n    T = 2π √(a³ / μ)\n\nPress Run and read the Period in the Summary.",
+      "setup": { "preset": "Defaults", "tab": "Orbit" },
+      "check": { "kind": "metric", "quantity": "Period", "min": 92, "max": 93.2, "success": "About 92.6 minutes: the space station goes round about 15 times a day." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Twice as far",
+      "text": "Double the semi-major axis to 13 556 km and run again. The law says the period grows by 2^1.5 ≈ 2.83.",
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "a", "min": 13500, "max": 13600 },
+          { "kind": "metric", "quantity": "Period", "min": 258, "max": 266 }
+        ],
+        "success": "About 262 minutes, 2.83 times longer."
+      },
+      "solution": { "params": { "a": 13556 }, "run": true }
+    },
+    {
+      "title": "Geostationary",
+      "text": "A geostationary satellite goes round once per sidereal day (23 h 56 min ≈ 1436 min), so it stays over one spot on the equator. Load the preset, run it, and look at the Ground track tab.",
+      "setup": { "preset": "Geostationary (Earth)", "tab": "Ground track" },
+      "check": { "kind": "metric", "quantity": "Period", "min": 1430, "max": 1442, "success": "One sidereal day: the ground track is a single point." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Molniya",
+      "text": "The Molniya orbit is very eccentric (e = 0.74) with a 12-hour period. It moves slowly near apoapsis, high over the northern hemisphere, which made it useful for communications in Russia. Load it, run, and watch the animation slow down at the top of the orbit.",
+      "setup": { "preset": "Molniya (Earth)", "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "e", "min": 0.7 },
+          { "kind": "metric", "quantity": "Period", "min": 715, "max": 725 }
+        ],
+        "success": "Half a sidereal day, so the pattern repeats every day."
+      },
+      "solution": { "run": true }
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "attractors-butterfly",
+  "title": "The butterfly effect",
+  "simulator": "attractors",
+  "order": 13,
+  "summary": "Lorenz's weather model: sensitive dependence, the Lyapunov exponent, a fixed point below the Hopf point, and Rössler's road to chaos.",
+  "steps": [
+    {
+      "title": "The Lorenz butterfly",
+      "text": "In 1963 Edward Lorenz cut a model of convection down to three equations. With σ = 10, ρ = 28, β = 8/3 the motion loops around two wings and never repeats: a strange attractor.\n\nRun it and look at the Attractor tab and the Animation.",
+      "setup": { "preset": "Lorenz butterfly (ρ = 28)", "tab": "Attractor" },
+      "check": { "kind": "metric", "quantity": "Distinct maxima", "min": 33, "success": "Every loop is different: the maxima of z never repeat." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Two runs, a hundred-millionth apart",
+      "text": "A twin starts 10⁻⁸ away in x. Watch the two points in the Animation, then open Sensitivity: the distance between them grows exponentially (a straight line on the log scale) until they are as far apart as the butterfly is wide.\n\nRead the time they come apart in the Summary.",
+      "setup": { "preset": "Lorenz butterfly (ρ = 28)", "tab": "Sensitivity" },
+      "check": { "kind": "metric", "quantity": "Twins apart (10 % of the size)", "max": 40, "success": "About 30 time units: an error of one part in 10⁸ ruins the forecast after that. This is why weather forecasts fail after a week or two." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The Lyapunov exponent",
+      "text": "The slope of that line is the largest Lyapunov exponent λ: a separation grows like e^{λt}. Every 1/λ time units (the Lyapunov time) an error grows by a factor e.\n\nThe app measures λ from the linearized equations, not from the twins. What is it for the butterfly?",
+      "setup": { "preset": "Lorenz butterfly (ρ = 28)", "tab": "Sensitivity" },
+      "check": { "kind": "metric", "quantity": "Largest Lyapunov exponent", "min": 0.8, "max": 1.0, "success": "λ ≈ 0.9: the forecast loses one digit every 2.5 time units." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Below the Hopf point",
+      "text": "Lower ρ to 14 and run. Below ρ ≈ 24.74 the two equilibria at the centres of the wings are stable. Just below it the butterfly survives beside them (down to ρ ≈ 24.06, and long chaotic transients below that), but well below it the motion spirals into one of them. Look at the Analyze ▸ Modes tab: no unstable spiral any more.",
+      "setup": { "preset": "Lorenz butterfly (ρ = 28)", "params": { "rho": 14 }, "tab": "Attractor" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "rho", "max": 24 },
+          { "kind": "metric", "quantity": "Settled at an equilibrium", "min": 1 }
+        ],
+        "success": "The motion settles, and λ is negative: nearby starts come together."
+      },
+      "solution": { "params": { "rho": 14 }, "run": true }
+    },
+    {
+      "title": "Rössler's road to chaos",
+      "text": "Rössler's system has one wing. With a = b = 0.2 and c = 2.5 it is a simple loop: one maximum of x, repeated forever (the Return map shows one point). Raise c to 3.5 and run: the loop closes only every second time round, and the return map shows two points. This is period doubling, the same road to chaos as the driven pendulum.",
+      "setup": { "preset": "Rössler: period-1 (c = 2.5)", "params": { "c": 3.5 }, "tab": "Return map" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "model", "value": "rossler" },
+          { "kind": "metric", "quantity": "Distinct maxima", "min": 2, "max": 2 }
+        ],
+        "success": "Period-2. Keep raising c: period-4 near 4.0, then chaos from about 4.2 (c = 5.7 is the classic chaotic band)."
+      },
+      "solution": { "params": { "model": "rossler", "c": 3.5 }, "run": true }
+    }
+  ]
+}

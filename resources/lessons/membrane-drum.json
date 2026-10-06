@@ -1,0 +1,62 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "membrane-drum",
+  "title": "Why a drum is not a string",
+  "simulator": "membrane",
+  "order": 27,
+  "summary": "A drum's overtones are not harmonics: square and circular drums, nodal lines, Bessel zeros, and why where you strike decides what rings.",
+  "steps": [
+    {
+      "title": "Overtones that don't fit",
+      "text": "A string's overtones are harmonics: exactly 2, 3, 4, … times its fundamental, which is why it has a clear pitch. A drum head is a string stretched in two directions, so its modes have two numbers (m, n), and its frequencies are\n\n    f_mn = (c/2) √((m/a)² + (n/b)²),   c = √(T/ρ)\n\nRun this square drum and open Frequencies: the dashed line is where a string's overtones would be. Read f2 / f1 in the Summary.",
+      "setup": { "preset": "Square drum struck off-centre", "tab": "Frequencies" },
+      "check": { "kind": "metric", "quantity": "f2 / f1", "min": 1.55, "max": 1.61, "success": "√(5/2) = 1.58, not 2. The overtones crowd in at 1.58, 2, 2.24, 2.55, …: no whole-number pattern, so a drum sounds like a thud rather than a note." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Nodal lines",
+      "text": "Open Mode shapes. Each tile is one mode; the lines through it are nodal lines, which never move. Sprinkle sand on a vibrating plate and it collects on them: these are Chladni patterns. Mode (m, n) has m − 1 nodal lines dividing the width and n − 1 dividing the height.\n\nStart the drum in a single mode: set Start to One mode with m = 2, n = 1, run, and watch the Animation flap either side of the line down the middle.",
+      "setup": { "preset": "Square drum struck off-centre", "tab": "Mode shapes" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "initial", "value": "mode" },
+          { "kind": "metric", "quantity": "Dominant mode frequency", "min": 197, "max": 203 }
+        ],
+        "hint": "Set Start to One mode, Mode m to 2 and Mode n to 1, then run.",
+        "success": "About 200 Hz, 1.58 × the fundamental. The two halves move in opposite directions and the middle line stays still."
+      },
+      "solution": { "params": { "initial": "mode", "modeM": 2, "modeN": 1 }, "run": true }
+    },
+    {
+      "title": "A round drum and Bessel zeros",
+      "text": "Real drums are round. A circular membrane's modes are Bessel functions J_m(kr) cos(mθ): m nodal diameters and n nodal circles (the rim counts as one). The rim must stay still, so k R must be a zero j_mn of J_m, and\n\n    f_mn = c j_mn / (2π R),   j01 = 2.405, j11 = 3.832, j21 = 5.136, j02 = 5.520\n\nRun the circular drum and compare f2 / f1 with j11 / j01. The Frequencies tab shows the grid's values against the exact ones.",
+      "setup": { "preset": "Circular drum struck off-centre", "tab": "Frequencies" },
+      "check": { "kind": "metric", "quantity": "f2 / f1", "min": 1.57, "max": 1.61, "success": "j11 / j01 = 1.593. The next ones come at 2.14, 2.30, 2.65: again nothing like 2, 3, 4." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Strike at the centre",
+      "text": "Now strike the drum exactly in the middle and open Mode content. The centre lies on a nodal diameter of every mode with m ≥ 1, so a blow there cannot start them.",
+      "setup": { "preset": "Circular drum struck at the centre", "tab": "Mode content" },
+      "check": { "kind": "metric", "quantity": "Energy in axisymmetric modes", "min": 99.9, "success": "Only the axisymmetric modes (0, n) ring, at 1 : 2.30 : 3.60 : 4.90 × the fundamental. They also radiate sound well and die quickly: a centre hit sounds dull." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Where you strike decides what rings",
+      "text": "Move the strike out towards the rim: set Position x to 0.8 and run. Which modes take over?",
+      "setup": { "preset": "Circular drum struck at the centre", "tab": "Mode content" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "strikeX", "min": 0.7 },
+          { "kind": "metric", "quantity": "Energy in axisymmetric modes", "max": 50 }
+        ],
+        "hint": "Set Position x to 0.8 (Position y can stay at 0.5) and run.",
+        "success": "The (1,1), (2,1), (3,1), … modes now carry most of the energy. That is why timpanists strike about a quarter of the way in from the rim. In a real kettledrum the air pulls these modes to about 2 : 3 : 4 : 5 times a missing fundamental, close enough to harmonics to give a clear pitch."
+      },
+      "solution": { "params": { "strikeX": 0.8 }, "run": true }
+    }
+  ]
+}

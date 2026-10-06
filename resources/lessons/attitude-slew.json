@@ -1,0 +1,75 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "attitude-slew",
+  "title": "Pointing a spacecraft",
+  "simulator": "attitude",
+  "order": 25,
+  "summary": "A tumble, a detumble, a quaternion PD slew and its gains, a faster bang-bang slew on thrusters, and a disturbance that fills the reaction wheels.",
+  "steps": [
+    {
+      "title": "Left alone, it tumbles",
+      "text": "With no control a spacecraft keeps its angular momentum. Spin it about its intermediate axis (I = 30, 40, 50 kg·m², 10°/s about y) and the tiniest wobble grows: the body turns right over, again and again, the tennis racket effect.\n\nRun it and watch the Animation. The Conservation tab shows the energy and the inertial angular momentum staying constant while the attitude goes everywhere.",
+      "setup": { "preset": "Free tumble: intermediate axis", "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "metric", "quantity": "Largest angle from start", "min": 150 },
+          { "kind": "metric", "quantity": "Energy drift (relative)", "max": 1e-9 }
+        ],
+        "success": "It turns more than 150° away from where it started, while energy and momentum change by less than one part in a billion."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Detumble: where does the spin go?",
+      "text": "Three reaction wheels, one on each body axis, can push back: spinning a wheel up turns the body the other way. The simplest law damps the rates, τ = −Kd ω.\n\nRun the detumble and open Wheel momentum. The body stops, but no torque came from outside, so its momentum cannot vanish. Where did it go?",
+      "setup": { "preset": "Detumble", "tab": "Wheel momentum" },
+      "check": { "kind": "metric", "quantity": "Final rate", "max": 0.01, "success": "The body is still, and the wheels now hold its momentum (about 3.5 N·m·s about z). Real spacecraft dump it later with thrusters or magnetic torquers." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Max wheel momentum", "value": 3.46, "tolerance": 0.02 }
+      ]
+    },
+    {
+      "title": "A PD slew and its gains",
+      "text": "To turn to a target, the controller uses the error quaternion: τ = −Kp · 2 q_e,vec − Kd ω. About one axis this is a mass-spring-damper, I θ'' + Kd θ' + Kp θ = 0, with ωn = √(Kp/I) and ζ = Kd / (2 √(Kp I)). The Analyze ▸ Modes tab lists them for each axis.\n\nThe 90° yaw slew overshoots a little (ζ = 0.7 about z). Raise the rate gain Kd from 7 to 10 and run: no overshoot, and it settles sooner.",
+      "setup": { "preset": "90° yaw slew (PD)", "tab": "Pointing error" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "Kd", "min": 9 },
+          { "kind": "metric", "quantity": "Overshoot", "max": 0.5 }
+        ],
+        "hint": "Set the rate gain Kd to 10 and run.",
+        "success": "No overshoot, and within 0.1° in under 100 s. Stiffer gains help only so much: look at Torques, the wheels are at their 0.2 N·m limit for the first ten seconds, which caps how fast the slew can start."
+      },
+      "solution": { "params": { "Kd": 10 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Slew time (within 0.1°)", "value": 97.71, "tolerance": 0.01 },
+        { "kind": "metric", "quantity": "Overshoot", "max": 0.5 }
+      ]
+    },
+    {
+      "title": "Bang-bang on thrusters",
+      "text": "Thrusters give far more torque than wheels. The fastest rest-to-rest turn with a torque limit is bang-bang: full acceleration about the eigenaxis for half the angle, full braking for the other half. About one axis it takes t = 2 √(θ I / τ) = 2 √(π/2 · 50 / 1) ≈ 17.7 s.\n\nRun it and compare the slew time with the PD slew.",
+      "setup": { "preset": "Bang-bang slew (thrusters)", "tab": "Pointing error" },
+      "check": { "kind": "metric", "quantity": "Slew time (within 0.1°)", "max": 20, "success": "About six times faster than the wheels, but it burns propellant (the Thruster impulse in the Summary), which is why spacecraft slew on wheels when they can." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Bang-bang time 2√(θ/α)", "value": 17.7245, "tolerance": 0.001 },
+        { "kind": "metric", "quantity": "Slew time (within 0.1°)", "value": 17.31, "tolerance": 0.01 }
+      ]
+    },
+    {
+      "title": "A disturbance fills the wheels",
+      "text": "Small steady torques (solar pressure, gravity gradient) never stop. Holding attitude against one, the wheels must absorb it, so their momentum grows linearly at the disturbance torque: 0.01 N·m fills a 6 N·m·s wheel in 600 s.\n\nRun it and watch Wheel momentum and the Animation after the wheel saturates.",
+      "setup": { "preset": "Hold: a disturbance saturates the wheels", "tab": "Wheel momentum" },
+      "check": { "kind": "metric", "quantity": "Wheels saturated", "min": 1, "success": "At 600 s the z wheel is full and the body is pushed away. Try the preset Hold with momentum dumping: thrusters unload the wheel before it saturates." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Time to saturation", "value": 600, "tolerance": 0.005 }
+      ]
+    }
+  ]
+}

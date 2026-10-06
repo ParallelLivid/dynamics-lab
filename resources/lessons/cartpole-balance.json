@@ -1,0 +1,62 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "cartpole-balance",
+  "title": "Balancing a pole",
+  "simulator": "cartpole",
+  "order": 14,
+  "summary": "An unstable system, a PID loop that half works, an LQR that does the job, and what a weak motor does to it all.",
+  "steps": [
+    {
+      "title": "It falls",
+      "text": "A pole balanced upright on a cart is unstable: the smallest tilt grows. Open the Analyze ▸ Modes tab for the cart without control: one mode is a Topple (unstable), with a positive eigenvalue of about 4.0 per second, so a tilt grows e-fold every quarter second. Run it to see.",
+      "setup": { "preset": "Falls without control", "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "Topple (unstable)", "success": "The other modes: the cart drifting freely (eigenvalue 0), its speed dying away under friction (−0.09 per second), and the topple's mirror image at −4.0 per second: a tilt already swinging toward upright at just the right rate comes to rest there." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "PID on the angle",
+      "text": "Push the cart under the pole when it leans: F = Kp θ + Ki ∫θ + Kd θ'. Run the PID controller. The pole stays up (max |θ| about 5°, the starting tilt), but watch the cart in the Angle and position tab: nothing tells it where to be, so it wanders off.",
+      "setup": { "preset": "PID: balances, cart drifts", "tab": "Angle and position" },
+      "check": { "kind": "metric", "quantity": "Max |θ|", "max": 5.5, "success": "Balanced, but the cart drifted almost 2 m. The Analyze ▸ Modes tab shows a Cart drift (neutral) mode." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "LQR: balance and return",
+      "text": "A linear-quadratic regulator uses the whole state, s = [x ẋ θ θ'], and picks the gains K that minimize ∫ (sᵀ Q s + r F²) dt. Run it: the pole recovers and the cart comes back to the middle. The Gains and poles tab shows K and every closed-loop pole in the left half-plane.",
+      "setup": { "preset": "LQR: balance and return", "tab": "Angle and position" },
+      "check": { "kind": "metric", "quantity": "Final x error", "max": 0.05, "success": "Both the pole and the cart are under control." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Cheaper control",
+      "text": "The weight r prices the force. Raise it from 0.1 to 10 and run: the controller pushes more gently (compare Max |F| in the Summary, about 6.8 N before) and takes longer to settle.",
+      "setup": { "preset": "LQR: balance and return", "tab": "Control force" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "r", "min": 5 },
+          { "kind": "metric", "quantity": "Max |F|", "max": 4 }
+        ],
+        "hint": "Set the LQR weight on force (r) to 10 and run.",
+        "success": "Less force, slower recovery: the trade-off LQR lets you tune with one number."
+      },
+      "solution": { "params": { "r": 10 }, "run": true }
+    },
+    {
+      "title": "Motor limits",
+      "text": "Real motors have a force limit. With a 10° start and only 2 N, the motor saturates: the cart races along under the pole, overshoots, and reaches the end of the track as the pole falls back the other way. Find a force limit that is just enough: raise Fmax until the pole settles, using as little as you can (5 N or less).",
+      "setup": { "preset": "Weak motor (saturation)", "tab": "Control force" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "Fmax", "max": 5 },
+          { "kind": "metric", "quantity": "Settling time (θ within 1°)", "max": 6 }
+        ],
+        "hint": "Try 3 or 4 N.",
+        "success": "2.81 N is the least that works (2.8 N is just too little; 3 N settles in about 2.5 s, 4 N in 1.25 s): the controller still works while saturated, as long as it can recover before the pole tips too far."
+      },
+      "solution": { "params": { "Fmax": 4 }, "run": true }
+    }
+  ]
+}

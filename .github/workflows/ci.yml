@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    # The Code Analyzer and every test that does not open a window: quick
+    # feedback on engines, physics, and core logic.
+    name: Check and fast tests (MATLAB R2025b)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2025b
+
+      - name: Run build
+        uses: matlab-actions/run-build@v3
+        env:
+          # Private repositories need a MATLAB batch licensing token
+          # (https://github.com/mathworks-ref-arch/matlab-dockerfile/blob/main/alternates/non-interactive/MATLAB-BATCH.md),
+          # stored as the repository secret MLM_LICENSE_TOKEN.
+          MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
+        with:
+          tasks: check fasttest
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fast-test-results
+          path: test-results/
+
+  full:
+    # Everything, including the app and figure tests (under a virtual display),
+    # as the five parts of buildfile.m's testParts, run side by side.
+    name: Tests, ${{ matrix.part }} (MATLAB R2025b)
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [testlessons, testcore, testsimsam, testsimsnz, testconformance]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Start virtual display for UI tests
+        run: |
+          sudo apt-get install -y xvfb
+          Xvfb :99 &
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2025b
+
+      - name: Run build
+        uses: matlab-actions/run-build@v3
+        env:
+          MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
+        with:
+          tasks: ${{ matrix.part }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.part }}
+          path: test-results/

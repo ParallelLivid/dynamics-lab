@@ -1,0 +1,54 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "plate-stability",
+  "title": "Heat in two dimensions",
+  "simulator": "plate",
+  "order": 28,
+  "summary": "Watch a hot spot spread across a plate, find the explicit scheme's 2-D stability limit (half the 1-D one), and let ADI take big steps.",
+  "steps": [
+    {
+      "title": "A hot spot spreads",
+      "text": "A 20 cm steel plate has its edges held at 20 °C and starts with an 80 °C hot spot. Press Run and look at the Temperature field tab: six snapshots share one colour scale.\n\nIn 2-D the heat spreads in every direction, so the peak falls much faster than in a rod: the spot's area grows like 4αt, and its peak falls as 1/t. The Probes tab shows the heat arriving at the probe.",
+      "setup": { "preset": "Hot spot spreading", "tab": "Temperature field" },
+      "check": { "kind": "metric", "quantity": "Probe temperature", "min": 20.5, "success": "The probe warmed while the peak dropped from 100 °C to under 40 °C in a minute." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The 2-D stability limit",
+      "text": "The explicit scheme moves each node by r_x (T_W − 2T + T_E) + r_y (T_S − 2T + T_N), with r_x = α Δt / Δx². In a rod it is stable up to r = ½. Here each node has four neighbours instead of two, so the limit is r_x + r_y ≤ ½: on a square grid, r ≤ ¼.\n\nThis setup runs the explicit scheme right at r = ¼. Run it and open the Stability tab: every grid mode's growth factor stays between −1 and 1.",
+      "setup": { "preset": "Explicit at the limit (r = 1/4)", "tab": "Stability" },
+      "check": { "kind": "metric", "quantity": "Stable", "min": 1, "success": "Stable, but only just: the checkerboard mode is multiplied by almost −1 every step." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Just past the limit",
+      "text": "Raise r to 0.3 and run again, then watch the Animation. The growth factor of the shortest wavelengths drops below −1, so a checkerboard that starts at the level of rounding errors grows every step until the run stops.\n\n(Just past the limit, at r = 0.26, it grows too, but slowly: it needs a longer run to show.)",
+      "setup": { "preset": "Explicit at the limit (r = 1/4)", "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "r", "min": 0.26, "hint": "Set r to 0.3." },
+          { "kind": "metric", "quantity": "Stable", "max": 0, "hint": "Run it. Close to ¼ the growth is slow: try 0.3." }
+        ],
+        "success": "Blown up: the step was only 20 % too big. Look at the red points on the Stability tab."
+      },
+      "solution": { "params": { "r": 0.3 }, "run": true }
+    },
+    {
+      "title": "ADI takes big steps",
+      "text": "The ADI scheme (Peaceman–Rachford) splits each step in two halves, implicit along x and then along y. Each half needs only a tridiagonal solve per grid line, almost as cheap as an explicit step, and it is stable for any step.\n\nSwitch the Scheme to ADI, set r to 5 (twenty times the explicit limit), and run.",
+      "setup": { "preset": "Explicit past the limit (r = 0.3)", "tab": "Stability" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "scheme", "value": "adi", "hint": "Choose ADI." },
+          { "kind": "input", "name": "r", "min": 2, "hint": "Set r to 5." },
+          { "kind": "metric", "quantity": "Stable", "min": 1 }
+        ],
+        "success": "Stable at twenty times the explicit step. Stable is not the same as accurate: at r = 5 a pattern that is fine along one direction and smooth along the other is multiplied by about −0.8 each step, so it rings, and a checkerboard (fine along both) by about +0.7, where the exact factor is e^−40: neither dies out as it should. The Stability tab shows them far below the exact curve."
+      },
+      "solution": { "params": { "scheme": "adi", "r": 5 }, "run": true }
+    }
+  ]
+}

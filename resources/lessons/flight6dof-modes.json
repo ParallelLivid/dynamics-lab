@@ -1,0 +1,188 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "flight6dof-modes",
+  "title": "How an aircraft wobbles",
+  "simulator": "flight6dof",
+  "order": 5,
+  "summary": "Trim an aircraft, find its natural modes, excite them as a pilot would, and measure them.",
+  "steps": [
+    {
+      "title": "Trimmed flight",
+      "text": "In \"Straight flight\" the forces and moments balance (the aircraft is trimmed), so it flies level at 20 m/s and 100 m. Press Run: the altitude should stay at 100 m.",
+      "setup": {
+        "preset": "Straight flight",
+        "tab": "Altitude"
+      },
+      "check": {
+        "kind": "metric",
+        "quantity": "Final altitude",
+        "min": 99.5,
+        "max": 100.5,
+        "success": "Level flight: trim holds the altitude."
+      },
+      "solution": {
+        "run": true
+      },
+      "claims": [
+        { "kind": "metric", "quantity": "Final altitude", "value": 100, "tolerance": 0.001 }
+      ]
+    },
+    {
+      "title": "Trim at a new speed",
+      "text": "Trimming finds the angle of attack, throttle, and pitch torque that keep the aircraft in steady flight. Set Trim airspeed (in the Trim section) to 24 m/s and press \"Trim aircraft\" below the inputs. The initial state and the controls change together. Then run: the altitude should stay at 100 m again, a little faster and with a little less angle of attack.",
+      "setup": {
+        "preset": "Straight flight",
+        "tab": "Altitude"
+      },
+      "check": {
+        "kind": "all",
+        "checks": [
+          {
+            "kind": "input",
+            "name": "trimSpeed",
+            "min": 23,
+            "max": 25,
+            "hint": "Set Trim airspeed to 24 m/s."
+          },
+          {
+            "kind": "input",
+            "name": "u0",
+            "min": 23,
+            "hint": "Press Trim aircraft."
+          },
+          {
+            "kind": "metric",
+            "quantity": "Final altitude",
+            "min": 99.5,
+            "max": 100.5
+          }
+        ],
+        "success": "Trimmed: the forces and the pitching moment balance at 24 m/s too."
+      },
+      "solution": {
+        "params": {
+          "trimSpeed": 24,
+          "u0": 23.996060042655,
+          "w0": 0.434859091333,
+          "theta0": 1.038206421982,
+          "throttle": 0.876575182627,
+          "elevator": -0.000957691489
+        },
+        "run": true
+      }
+    },
+    {
+      "title": "The aircraft's modes",
+      "text": "Open the Analyze ▸ Modes tab. Linearizing about trim gives the classic modes:\n\n• Dutch roll: a yawing and rolling wobble\n• Roll subsidence: how quickly a roll rate dies away\n• Spiral: a slow drift into (or out of) a turn\n\nIn this model both longitudinal modes are heavily damped, so they settle without oscillating.",
+      "setup": {
+        "tab": "Modes"
+      },
+      "check": {
+        "kind": "modes",
+        "mode": "Dutch roll",
+        "quantity": "Period",
+        "min": 2,
+        "max": 5,
+        "hint": "Run Straight flight, then open the Analyze ▸ Modes tab.",
+        "success": "A Dutch roll period of about 3.2 s."
+      },
+      "solution": {
+        "run": true
+      },
+      "claims": [
+        { "kind": "modes", "mode": "Dutch roll", "quantity": "Period", "value": 3.244, "tolerance": 0.01 }
+      ]
+    },
+    {
+      "title": "Kick the rudder",
+      "text": "Pilots excite the Dutch roll with a rudder doublet. Set Yaw torque (in Controls) to a Doublet: amplitude 0.3, starting at 1 s, lasting 0.5 s each way. Run it and look at the Euler angles tab: the yaw and roll oscillation dies away with the period the Analyze ▸ Modes tab predicts.",
+      "setup": {
+        "preset": "Straight flight",
+        "tab": "Euler angles"
+      },
+      "check": {
+        "kind": "all",
+        "checks": [
+          {
+            "kind": "input",
+            "name": "rudder",
+            "shape": "doublet"
+          },
+          {
+            "kind": "run"
+          }
+        ],
+        "success": "The doublet starts a Dutch roll, and the aircraft's yaw stability damps it out."
+      },
+      "solution": {
+        "params": {
+          "rudder": {
+            "shape": "doublet",
+            "value": 0,
+            "amplitude": 0.3,
+            "start": 1,
+            "width": 0.5,
+            "period": 2
+          }
+        },
+        "run": true
+      }
+    },
+    {
+      "title": "Measure the Dutch roll",
+      "text": "Open the Mode ID tab. It fits the yaw rate after the doublet with damped oscillations (the dashed line) and compares the measured period and damping with the linear model's prediction. A good match means the linear model describes this flight well.\n\nTip: \"Tune input\" below the inputs sizes the doublet to any mode for you.",
+      "setup": {
+        "tab": "Mode ID"
+      },
+      "check": {
+        "kind": "metric",
+        "quantity": "Identified period",
+        "min": 2.9,
+        "max": 3.6,
+        "hint": "Run the rudder doublet from the previous step, then open the Mode ID tab.",
+        "success": "About 3.24 s, within a few percent of the Analyze ▸ Modes tab."
+      },
+      "solution": {
+        "params": {
+          "rudder": {
+            "shape": "doublet",
+            "value": 0,
+            "amplitude": 0.3,
+            "start": 1,
+            "width": 0.5,
+            "period": 2
+          }
+        },
+        "run": true
+      },
+      "claims": [
+        { "kind": "metric", "quantity": "Identified period", "value": 3.245, "tolerance": 0.01 }
+      ]
+    },
+    {
+      "title": "The phugoid",
+      "text": "The phugoid is a slow exchange of speed and height, like a roller coaster. The \"Phugoid mode\" preset lowers the drag and starts at 23 m/s with the attitude trimmed for 20 m/s. Run it and watch the Altitude tab: the aircraft rises about 5 m, then the swing dies away and it settles into a slow descent. The Analyze ▸ Modes tab says why: the phugoid's period is about half a minute, but it is heavily damped, so little more than its first half swing shows. (This model's pitch stiffness does not grow with airspeed, so its phugoid is far more damped than a real aircraft's, which can swing for minutes.)",
+      "setup": {
+        "preset": "Phugoid mode",
+        "tab": "Altitude"
+      },
+      "check": {
+        "kind": "modes",
+        "mode": "Phugoid",
+        "quantity": "Period",
+        "min": 28,
+        "max": 36,
+        "success": "About 32 s, with a damping ratio near 0.57: one swing up, and it is over."
+      },
+      "solution": {
+        "run": true
+      },
+      "claims": [
+        { "kind": "modes", "mode": "Phugoid", "quantity": "Period", "value": 31.83, "tolerance": 0.01 },
+        { "kind": "modes", "mode": "Phugoid", "quantity": "DampingRatio", "value": 0.566, "tolerance": 0.02 },
+        { "kind": "metric", "quantity": "Final altitude", "value": 87.85, "tolerance": 0.01 }
+      ]
+    }
+  ]
+}

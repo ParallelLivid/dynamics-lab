@@ -1,0 +1,63 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "projectile-best-angle",
+  "title": "The best launch angle",
+  "simulator": "projectile",
+  "order": 3,
+  "summary": "Find the angle that throws furthest, then see how air resistance changes the answer.",
+  "steps": [
+    {
+      "title": "The ideal parabola",
+      "text": "Without air resistance, a projectile launched from the ground lands at\n\n    R = v₀² sin(2θ) / g\n\nAt 50 m/s and 45° that is 254.8 m. Press Run and check the Range in the Summary.",
+      "setup": { "preset": "Defaults", "tab": "Animation" },
+      "check": { "kind": "metric", "quantity": "Range", "min": 254, "max": 256, "success": "254.8 m, as the formula says." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Which angle goes furthest?",
+      "text": "Find the best angle by sweeping it. The Analyze ▸ Sweep tab is set for 5° to 85°: press Run sweep and choose Range in the Plot list. The peak is marked.",
+      "setup": { "preset": "Defaults", "sweep": { "parameter": "theta", "from": 5, "to": 85, "steps": 17 }, "tab": "Sweep" },
+      "check": {
+        "kind": "sweep", "parameter": "theta", "minRuns": 15,
+        "success": "45°, as sin(2θ) predicts. 30° and 60° tie, because sin 60° = sin 120°."
+      },
+      "solution": { "sweep": true }
+    },
+    {
+      "title": "Add air resistance",
+      "text": "Switch the model to \"With drag\" (a sphere of 5 cm radius and 1 kg) and find the angle with the longest range now. Try a few angles, or sweep again.\n\nThe setup ticks \"Keep previous runs\", so every angle you try stays on the plots.",
+      "setup": { "params": { "model": "sphere" }, "keepRuns": true, "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "model", "value": "sphere" },
+          { "kind": "metric", "quantity": "Range", "min": 180, "hint": "Try angles a little below 45°." }
+        ],
+        "success": "Drag shortens the flight and lowers the best angle to about 42°."
+      },
+      "solution": { "params": { "model": "sphere", "theta": 42 }, "run": true }
+    },
+    {
+      "title": "Let the app find it",
+      "text": "Each run also searches for the best angle (\"Find the optimal angle\", under Analysis). The Summary lists the optimal angle and how much range your angle loses, and the dotted arc on the Trajectory plot is the best throw.\n\nPress \"Use optimal angle\" (below the inputs) to set it, then run again.",
+      "setup": { "params": { "model": "sphere", "findOptimal": true } },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "metric", "quantity": "Optimal angle", "min": 40, "max": 44 },
+          { "kind": "metric", "quantity": "Range lost vs optimal", "max": 0.01 }
+        ],
+        "hint": "Run, press Use optimal angle, and run again.",
+        "success": "About 42.3°: the search agrees with your sweep to a fraction of a degree."
+      },
+      "solution": { "params": { "model": "sphere", "theta": 42.33 }, "run": true }
+    },
+    {
+      "title": "Side by side",
+      "text": "Run 45° and your best angle with drag, with \"Keep previous runs\" ticked. The Runs tab lists the runs with their inputs and results side by side.",
+      "check": { "kind": "runs", "min": 1, "success": "The Runs tab compares them; the Analyze ▸ Custom plot tab overlays any two columns." },
+      "solution": { "params": { "model": "sphere", "theta": 45 }, "keepRuns": true, "runs": 2 }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "dcmotor-bode",
+  "title": "The motor's frequency response",
+  "simulator": "dcmotor",
+  "order": 32,
+  "summary": "Read a Bode plot: voltage to speed is a first-order lag whose bandwidth is 1/τ, and voltage to angle is an integrator, which is why a position servo needs no integral term.",
+  "steps": [
+    {
+      "title": "The time constant",
+      "text": "Apply a 12 V step to the motor with no controller and run. The speed rises like 1 − e^(−t/τ), with the mechanical time constant\n\n    τ = J R / (K² + b R)\n\nRead τ in the Summary, and compare it with the time to reach 63 % of the final speed.",
+      "setup": { "preset": "Open loop: voltage step", "tab": "Angle and speed" },
+      "check": {
+        "kind": "metric", "quantity": "Mechanical time constant", "min": 0.19, "max": 0.2,
+        "hint": "Load the setup and press Run.",
+        "success": "τ = 0.196 s, and the speed reaches 63 % at 0.195 s: one time constant, as e^(−1) = 0.37 says."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Voltage to speed",
+      "text": "The Analyze ▸ Bode tab shakes the motor with a sine wave of voltage at every frequency ω and plots how large the speed swing is (gain, in dB) and how far it lags (phase).\n\nIt is set to Voltage → Speed. Run, then read the DC gain (the gain for a steady voltage) and the bandwidth (where the gain has fallen 3 dB).",
+      "setup": { "preset": "Open loop: voltage step", "bode": { "input": "Voltage", "output": "Speed" }, "tab": "Bode" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "bode", "input": "Voltage", "output": "Speed", "quantity": "DCGain", "min": 9.5, "max": 10.1 },
+          { "kind": "bode", "input": "Voltage", "output": "Speed", "quantity": "Bandwidth", "min": 4.8, "max": 5.5 }
+        ],
+        "hint": "Press Run, then choose Voltage → Speed on the Analyze ▸ Bode tab.",
+        "success": "A slow wiggle gets the full 9.8 rad/s per volt, K / (K² + b R). The bandwidth, 5.15 rad/s, is close to 1/τ = 5.10 rad/s: above it the rotor's inertia can't keep up, and the gain falls 20 dB per decade with 90° of lag, like a first-order system. Far above, past the electrical pole at about 395 rad/s (near R/L), the inductance adds another 20 dB per decade and another 90°: that is why the phase ends at −180°."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A heavier load",
+      "text": "Double the inertia J to 0.002 kg·m² (a heavier load on the shaft) and run again. What should happen to τ, and to the bandwidth?",
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "J", "min": 0.0019, "max": 0.0021, "hint": "Set Inertia J to 0.002." },
+          { "kind": "bode", "input": "Voltage", "output": "Speed", "quantity": "Bandwidth", "min": 2.3, "max": 2.8 }
+        ],
+        "hint": "Press Run, and keep Voltage → Speed on the Analyze ▸ Bode tab.",
+        "success": "τ doubles to 0.39 s and the bandwidth halves to about 2.6 rad/s. The low-frequency gain stays 9.8: inertia only matters while the speed is changing."
+      },
+      "solution": { "params": { "J": 0.002 }, "run": true }
+    },
+    {
+      "title": "Voltage to angle",
+      "text": "Now look at the shaft angle instead of the speed. The setup puts J back and shows Voltage → Angle. Run, and look at the left end of the gain curve.",
+      "setup": { "preset": "Open loop: voltage step", "bode": { "input": "Voltage", "output": "Angle" }, "tab": "Bode" },
+      "check": {
+        "kind": "bode", "input": "Voltage", "output": "Angle", "quantity": "DCGain", "min": 1e6,
+        "hint": "Press Run, then choose Voltage → Angle on the Analyze ▸ Bode tab.",
+        "success": "The DC gain is infinite: the angle is the integral of the speed, so a steady voltage turns the shaft forever. The gain climbs 20 dB for every decade lower in ω, the phase starts at −90°, and above 1/τ (about 5 rad/s) the gain falls 40 dB per decade."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Why P control holds an angle",
+      "text": "In the position servo (\"Position PD\" preset), the controller has no integral term, yet the shaft ends exactly on the target angle. Why?",
+      "check": {
+        "kind": "choice",
+        "options": [
+          "The motor already integrates speed into angle, so any steady error would keep the shaft turning until the error is gone",
+          "The bandwidth is high enough to remove any error",
+          "The inductance L stores the error and cancels it"
+        ],
+        "answer": 1,
+        "hint": "What did the infinite DC gain of Voltage → Angle tell you?",
+        "success": "The plant's integrator does the integral term's job for a step in the target. Add a steady load torque, though, and a P or PD loop is left with an error: then the controller needs its own Ki (see the \"Load torque disturbance\" preset)."
+      },
+      "solution": { "answer": 1 }
+    }
+  ]
+}

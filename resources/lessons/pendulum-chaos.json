@@ -1,0 +1,75 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "pendulum-chaos",
+  "title": "The butterfly effect",
+  "simulator": "pendulum",
+  "order": 7,
+  "summary": "Run two double pendulums a millionth of a degree apart, watch them part, and measure the chaos.",
+  "steps": [
+    {
+      "title": "Two pendulums, one tiny difference",
+      "text": "Hang a second rod and bob from the first and you get a double pendulum, one of the simplest chaotic systems.\n\nThis setup starts two of them: the solid one, and a faint twin whose lower rod starts just one millionth of a degree higher. Press Run and watch the Animation. For a while you cannot tell them apart.",
+      "setup": { "preset": "Double: butterfly effect", "tab": "Animation" },
+      "check": { "kind": "run", "hint": "Load the setup, then press Run.", "success": "Watch until the faint twin goes its own way." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "How fast do they part?",
+      "text": "Open the Divergence tab. The top plot shows the distance between the two pendulums on a logarithmic scale. It climbs along a straight line, which means the gap grows exponentially, until the twins are completely different.\n\nThe Summary tab gives the divergence time: when the lower bobs are 10 % of the pendulum's length apart.",
+      "check": {
+        "kind": "metric", "quantity": "Divergence time", "max": 18,
+        "hint": "Run the butterfly-effect setup first.",
+        "success": "A difference of 10⁻⁶ degrees becomes a completely different motion within seconds."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Small swings are not chaotic",
+      "text": "Chaos needs energy. Start both rods at 5° instead (Initial angle and Lower initial angle) and run again.\n\nThis time the twins stay together for the whole run: small swings are predictable.",
+      "setup": { "params": { "theta0": 5, "theta20": 5 }, "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "theta0", "max": 10 },
+          { "kind": "metric", "quantity": "Diverged", "max": 0 }
+        ],
+        "success": "No divergence: the twins swing together."
+      },
+      "solution": { "params": { "theta0": 5, "theta20": 5 }, "run": true }
+    },
+    {
+      "title": "Two ways to swing",
+      "text": "Small swings of a double pendulum are a mix of two normal modes: both rods swinging together (in phase), or against each other (anti-phase). Open the Analyze ▸ Modes tab to see them. With equal rods and bobs, the in-phase mode is the slower one.",
+      "setup": { "tab": "Modes" },
+      "check": {
+        "kind": "modes", "mode": "In-phase swing", "quantity": "Period", "min": 2.5, "max": 2.75,
+        "hint": "Run the 5° setup, then open the Analyze ▸ Modes tab.",
+        "success": "About 2.62 s; the anti-phase mode takes about 1.09 s."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Measure the chaos",
+      "text": "The Lyapunov exponent λ measures how fast nearby starts separate: the gap grows like e^(λt). Above zero means chaos.\n\nThis setup starts from a large swing and ticks \"Estimate the Lyapunov exponent\". Run it and read λ on the Divergence tab or in the Summary.",
+      "setup": { "preset": "Double: chaotic", "params": { "lyapunov": true }, "tab": "Energy" },
+      "check": {
+        "kind": "metric", "quantity": "Lyapunov exponent", "min": 0.3,
+        "success": "λ is about 1 per second: the gap grows about e-fold every second."
+      },
+      "solution": { "params": { "lyapunov": true }, "run": true }
+    },
+    {
+      "title": "Order and chaos side by side",
+      "text": "A Poincaré section records the lower rod each time the upper rod swings forward through the vertical. Regular motion leaves a few points or neat curves; chaos sprays them everywhere.\n\nThe Sweep tab is set up to vary the starting angle from 10° to 150°. Press Run sweep, then choose \"Poincaré ω₂ (all values)\" in the Plot list.",
+      "setup": {
+        "preset": "Double: Poincaré section",
+        "params": { "tspan": 30 },
+        "sweep": { "parameter": "theta0", "from": 10, "to": 150, "steps": 15 },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "theta0", "minRuns": 12 },
+      "solution": { "sweep": true }
+    }
+  ]
+}

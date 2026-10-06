@@ -1,0 +1,67 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "pendulum-vs-spring",
+  "title": "A pendulum is a spring",
+  "simulator": "pendulum",
+  "order": 34,
+  "summary": "Build a mass on a spring that keeps time with a pendulum, then swing the pendulum wide enough to break the match.",
+  "steps": [
+    {
+      "title": "The pendulum's clock",
+      "text": "A 1 m pendulum swinging 5°, without damping. For small swings, gravity pulls the bob back with a torque close to m g L θ: proportional to the angle, like a spring. That gives simple harmonic motion with period\n\n    T = 2π √(L / g) = 2.006 s\n\nRun it and read the measured period in the Summary.",
+      "setup": { "preset": "Small swing (5°)", "tab": "Angle & velocity" },
+      "check": {
+        "kind": "metric", "quantity": "Period (measured)", "min": 1.99, "max": 2.03,
+        "hint": "Load the setup and press Run.",
+        "success": "2.007 s, within 0.05 % of 2π√(L/g). Now build a spring that keeps the same time."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A spring that keeps time",
+      "text": "A mass on a spring oscillates at ωn = √(k/m), and the small-angle pendulum at ω = √(g/L). They match when\n\n    k / m = g / L\n\nThis mass is 2 kg. Set the stiffness k so that the spring keeps time with the 1 m pendulum, and run. (Damping is off.)",
+      "simulator": "massspring",
+      "setup": { "preset": "Defaults", "params": { "m": 2, "k": 10, "c": 0, "x0": 0.1 }, "tab": "Kinematics" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "k", "min": 19.2, "max": 20, "hint": "k = m g / L = 2 × 9.81 / 1." },
+          { "kind": "metric", "quantity": "Natural frequency ωn", "min": 3.1, "max": 3.16 }
+        ],
+        "success": "k = 19.62 N/m gives ωn = 3.132 rad/s, a period 2π/ωn = 2.006 s, the pendulum's. Only the ratio k/m matters, just as the pendulum's mass drops out of g/L."
+      },
+      "solution": { "params": { "k": 19.62 }, "run": true }
+    },
+    {
+      "title": "Swing it harder",
+      "text": "A spring's period doesn't depend on how far you stretch it: try x₀ = 1 m on the spring and ωn stays the same. Is the pendulum the same?\n\nBack on the pendulum, release it from 90° and run. Compare the measured period with the small-angle period.",
+      "setup": { "preset": "Undamped", "params": { "theta0": 90 }, "tab": "Angle & velocity" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "theta0", "min": 60, "hint": "Set the initial angle to 90°." },
+          { "kind": "metric", "quantity": "Period (measured)", "min": 2.3, "max": 2.45 }
+        ],
+        "success": "2.37 s, 18 % slower than the spring. The Angle plot shows the small-angle model drifting ahead of the real swing."
+      },
+      "solution": { "params": { "theta0": 90 }, "run": true }
+    },
+    {
+      "title": "Where the match breaks",
+      "text": "Why does the wide swing take longer than the spring that matched it at 5°?",
+      "check": {
+        "kind": "choice",
+        "options": [
+          "Gravity's torque grows as sin θ, slower than θ: at large angles the pull back is weaker than a spring's, so the swing slows",
+          "The bob has more energy, so it moves faster and the period gets shorter",
+          "Air resistance acts on the wide swing"
+        ],
+        "answer": 1,
+        "hint": "Compare sin 90° = 1 with 90° in radians, 1.57.",
+        "success": "At 90° the restoring torque is only 64 % of the linear spring's. The pendulum is a spring only for small angles; that is why a pendulum clock swings just a few degrees."
+      },
+      "solution": { "answer": 1 }
+    }
+  ]
+}

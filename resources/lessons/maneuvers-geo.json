@@ -1,0 +1,51 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "maneuvers-geo",
+  "title": "Getting to geostationary orbit",
+  "simulator": "maneuvers",
+  "order": 17,
+  "summary": "Plan the Δv budget to GEO: a Hohmann transfer, the cost of a plane change and where to do it, bi-elliptic transfers, and phasing.",
+  "steps": [
+    {
+      "title": "The Hohmann transfer",
+      "text": "To climb from a 300 km orbit to geostationary altitude (35 786 km), burn prograde to stretch the orbit into an ellipse that just reaches GEO, coast half an orbit, and burn again to circularize. Run it and read the Total Δv in the Summary.",
+      "setup": { "preset": "LEO to GEO (Hohmann)", "tab": "Transfer" },
+      "check": { "kind": "metric", "quantity": "Total Δv", "min": 3.85, "max": 3.95, "success": "3.895 km/s: 2.428 for the first burn, 1.468 for the second, 5.3 hours apart." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A plane change is expensive",
+      "text": "Launched from Cape Canaveral, the parking orbit is inclined 28.5°, but GEO is equatorial. Turning the velocity by Δi costs 2 v sin(Δi/2). Choose Plane change with an inclination change of −28.5° and run, still in the 300 km orbit.",
+      "setup": { "preset": "LEO to GEO (Hohmann)", "params": { "maneuver": "plane", "inc1": 28.5, "dInc": -28.5 }, "tab": "Δv budget" },
+      "check": { "kind": "metric", "quantity": "Total Δv", "min": 3.5, "success": "3.8 km/s, as much as the whole Hohmann transfer: low orbits are fast, so turning them is costly." },
+      "solution": { "params": { "maneuver": "plane", "inc1": 28.5, "dInc": -28.5 }, "run": true }
+    },
+    {
+      "title": "Turn where you are slow",
+      "text": "At GEO the speed is only 3.07 km/s, and the transfer ellipse is slower still at its apoapsis. Combining the plane change with the circularization burn, and splitting it optimally between the two burns, saves a lot. Load the combined maneuver and look at the Δv budget's alternatives.",
+      "setup": { "preset": "LEO to GEO with plane change (from Cape Canaveral)", "tab": "Δv budget" },
+      "check": { "kind": "metric", "quantity": "Total Δv", "max": 4.4, "success": "About 4.23 km/s in all: only 0.34 km/s more than without the plane change. Most of the turn (26°) happens at the top." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Sometimes three burns beat two",
+      "text": "For targets far away, a bi-elliptic transfer (out beyond the target, then back in) can beat Hohmann. The Analyze ▸ Sweep tab is set up to vary the target altitude from 2 to 30 times the starting radius with the intermediate apoapsis far out. Run the sweep and plot \"Bi-elliptic saving\": it turns positive between r₂/r₁ = 11.9 and 15.6.",
+      "setup": {
+        "preset": "LEO to GEO (Hohmann)",
+        "params": { "altB": 6000000 },
+        "sweep": { "parameter": "alt2", "from": 6971, "to": 193759, "steps": 15 },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "alt2", "minRuns": 8 },
+      "solution": { "sweep": true }
+    },
+    {
+      "title": "Phasing",
+      "text": "A satellite 30° ahead of you on the same orbit: to catch it, drop into a slightly smaller, faster orbit for one revolution, then return. Run it and check the Rendezvous miss.",
+      "setup": { "preset": "Phasing: catch up 30°", "tab": "Animation" },
+      "check": { "kind": "metric", "quantity": "Rendezvous miss", "max": 1, "success": "Within a kilometre after one lap: you gained 30° by going lower, and faster." },
+      "solution": { "run": true }
+    }
+  ]
+}

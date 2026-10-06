@@ -1,0 +1,57 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "heat-stability",
+  "title": "Why explicit schemes blow up",
+  "simulator": "heat",
+  "order": 8,
+  "summary": "Cool a copper bar, push the explicit scheme past its stability limit, and see how implicit schemes avoid it.",
+  "steps": [
+    {
+      "title": "A cooling bar",
+      "text": "A 1 m copper bar has its ends held at 20 °C and starts with a 50 °C sine-shaped hump in the middle. Heat flows out through the ends, and the hump decays as exp(−α π² t / L²).\n\nPress Run and compare the simulated profile with the exact solution (dashed) on the Temperature profile tab.",
+      "setup": { "preset": "Cooling bar (sine mode)", "tab": "Temperature profile" },
+      "check": { "kind": "metric", "quantity": "Max error vs exact", "max": 0.05, "success": "The numerical and exact profiles agree to hundredths of a degree." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The stability limit",
+      "text": "The explicit scheme updates each point from its neighbours: T ← T + r (T_left − 2T + T_right), with r = α Δt / Δx². When r is more than ½ the update overshoots, and the zig-zag error grows every step.\n\nThis setup starts a hot spot with the explicit scheme at r = 0.55. Run it and watch the Animation.",
+      "setup": { "preset": "Explicit beyond the limit (r = 0.55)", "tab": "Animation" },
+      "check": { "kind": "metric", "quantity": "Stable", "max": 0, "hint": "Run the setup.", "success": "The solution blew up: a small step past r = ½ is enough." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Implicit schemes are always stable",
+      "text": "Keep the same time step but switch the Scheme to Implicit (backward Euler) or Crank–Nicolson, and run again. Implicit schemes solve for all the new temperatures at once, so no time step makes them blow up.",
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "scheme", "value": "cranknicolson", "hint": "Choose Crank–Nicolson." },
+          { "kind": "metric", "quantity": "Stable", "min": 1 }
+        ],
+        "success": "Stable at the same step. Stable is not the same as accurate, though: try a much bigger step."
+      },
+      "solution": { "params": { "scheme": "cranknicolson" }, "run": true }
+    },
+    {
+      "title": "Accuracy and the time step",
+      "text": "Back to the cooling bar with Crank–Nicolson, now on a fine grid of 401 nodes so that the time step's error is the one you see. The Analyze ▸ Sweep tab is set up to vary the time step from 10 s to 160 s on a logarithmic scale. Run the sweep and plot \"Max error vs exact\": on log axes the error falls about 4× each time the step halves (second order), until the grid's own error takes over at the smallest step.",
+      "setup": {
+        "preset": "Cooling bar (sine mode)",
+        "params": { "scheme": "cranknicolson", "N": 401 },
+        "sweep": { "parameter": "dt", "from": 10, "to": 160, "steps": 5, "log": true },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "dt", "minRuns": 5 },
+      "solution": { "sweep": true }
+    },
+    {
+      "title": "Heat soaking into a wall",
+      "text": "A 30 cm brick wall: the outside surface follows the daily temperature cycle (15 ± 10 °C), and the inside loses heat to a room at 20 °C. Run three days. The Probes tab shows the temperature inside the wall: the swing shrinks and lags behind the surface.",
+      "setup": { "preset": "Daily temperature cycle in a brick wall", "tab": "Probes" },
+      "check": { "kind": "metric", "quantity": "Swing ratio (middle / surface)", "max": 0.4, "success": "In the middle of the wall the daily swing is about a quarter of the surface's: thick walls even out the temperature." },
+      "solution": { "run": true }
+    }
+  ]
+}

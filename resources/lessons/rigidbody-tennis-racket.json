@@ -1,0 +1,46 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "rigidbody-tennis-racket",
+  "title": "The tennis racket theorem",
+  "simulator": "rigidbody",
+  "order": 12,
+  "summary": "Why a body spins steadily about two of its axes but flips over about the third, and why a spinning top doesn't fall.",
+  "steps": [
+    {
+      "title": "Spin about the major axis",
+      "text": "Every rigid body has three principal axes. This box has inertias 1, 2, and 2.5 kg·m² (the box in the Animation is long along axis 1 and thin along axis 3).\n\nSpin it about axis 3, the axis of largest inertia, with a small wobble. Open the Analyze ▸ Modes tab: the small disturbances are an oscillation, a Wobble (stable). Run it to see it spin steadily.",
+      "setup": { "preset": "Stable spin: major axis", "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "Wobble (stable)", "success": "A wobble that never grows: spin about the major axis is stable." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Spin about the minor axis",
+      "text": "Now spin about axis 1, the axis of smallest inertia. Check the Analyze ▸ Modes tab again.",
+      "setup": { "preset": "Stable spin: minor axis", "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "Wobble (stable)", "success": "Stable too." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The intermediate axis",
+      "text": "Spin about axis 2, the intermediate one. Now the Analyze ▸ Modes tab shows a real eigenvalue pair: one disturbance grows exponentially, a Tumble (unstable), while its partner decays. Its growth rate is ω √((I₂ − I₁)(I₃ − I₂) / (I₁ I₃)) = 4.5 per second.",
+      "setup": { "preset": "Tennis racket (Dzhanibekov effect)", "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "Tumble (unstable)", "success": "Unstable: the intermediate-axis theorem." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "See it flip",
+      "text": "Run the tennis racket and watch the Animation. A disturbance of only 0.001 rad/s grows until the body flips over, comes back, and flips again, every 5 s, while the angular momentum L stays fixed in space. The Polhode tab shows why: ω follows the crossing of the energy and momentum ellipsoids, which runs from one end of axis 2 to the other.",
+      "setup": { "preset": "Tennis racket (Dzhanibekov effect)", "tab": "Animation" },
+      "check": { "kind": "metric", "quantity": "Flips", "min": 2, "success": "Astronaut Vladimir Dzhanibekov saw a wing nut do this in orbit in 1985." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A top that doesn't fall",
+      "text": "Gravity pulls on a tilted top, but its torque turns the spin axis sideways instead of down: the top precesses. For a fast top the precession rate is about\n\n    φ' = m g l / (I_s ω_s)\n\nwhich is 2.45 rad/s for this top spinning at 400 rad/s. Run it and compare the Precession rate in the Summary: about 2.5 rad/s, close to the exact steady rate at its tilt (2.52 rad/s, also in the Summary).",
+      "setup": { "preset": "Spinning top: fast", "tab": "Nutation and precession" },
+      "check": { "kind": "metric", "quantity": "Precession rate", "min": 2.2, "max": 2.7, "success": "The faster it spins, the slower it precesses." },
+      "solution": { "run": true }
+    }
+  ]
+}

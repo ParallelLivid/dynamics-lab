@@ -1,0 +1,87 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "entry-corridor",
+  "title": "Coming home",
+  "simulator": "entry",
+  "order": 24,
+  "summary": "Atmospheric entry: the Allen–Eggers peak deceleration, why steep entries are brutal, how lift helps, skip-out, and the entry corridor.",
+  "steps": [
+    {
+      "title": "A ballistic entry",
+      "text": "A capsule that only has drag slows in a pulse: the air is too thin at first, and by the time it is thick the capsule is slow. Allen and Eggers (1958) solved this for an exponential atmosphere, ignoring gravity. The peak deceleration is\n\n    a_max = V_E² sin|γ_E| / (2 e H)\n\nand it does not depend on the capsule's mass or size at all, only on where it peaks. Run this 7.5 km/s entry at −20° and compare the Peak deceleration with the Summary's ballistic estimate (Allen–Eggers), a row it shows for capsules without lift.",
+      "setup": { "preset": "Ballistic, exponential atmosphere (Allen–Eggers)", "tab": "Deceleration" },
+      "check": { "kind": "metric", "quantity": "Peak deceleration", "min": 47, "max": 56, "success": "About 52 g against the formula's 50 g: the few per cent is gravity, which the formula leaves out. Change β and run again: the peak moves up or down in altitude, but its size hardly changes." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Peak deceleration", "value": 52.48, "tolerance": 0.01 },
+        { "kind": "metric", "quantity": "Ballistic estimate of peak deceleration (Allen–Eggers)", "value": 50.118, "tolerance": 0.001 }
+      ]
+    },
+    {
+      "title": "Steeper is harsher",
+      "text": "The formula says the peak grows with sin|γ_E|: a steeper entry spends less time slowing down, so it has to slow down harder. Make the entry steeper than −35° and run.",
+      "setup": { "preset": "Ballistic, exponential atmosphere (Allen–Eggers)", "tab": "Deceleration" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "gamma0", "max": -35 },
+          { "kind": "metric", "quantity": "Peak deceleration", "min": 80 }
+        ],
+        "success": "Close to a hundred g at −40°: survivable for a warhead, not for a crew. Crewed capsules enter at a few degrees."
+      },
+      "solution": { "params": { "gamma0": -40 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Peak deceleration", "value": 97.73, "tolerance": 0.01 }
+      ]
+    },
+    {
+      "title": "Lift lowers the load",
+      "text": "This is a Soyuz-like capsule returning from the ISS in its backup ballistic mode: about 9 g. A capsule with its centre of mass off its axis flies at an angle and makes some lift, L/D ≈ 0.3. Pointed up, the lift holds the capsule higher, in thinner air, for longer. Set the lift-to-drag ratio to 0.3 and run.",
+      "setup": { "preset": "Soyuz-like ballistic return from the ISS", "tab": "Deceleration" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "LD", "min": 0.2 },
+          { "kind": "metric", "quantity": "Peak deceleration", "max": 4 }
+        ],
+        "success": "About 3 g instead of 9. The price: a longer flight that soaks up more heat (compare the Heat load), and a landing much further downrange."
+      },
+      "solution": { "params": { "LD": 0.3 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Peak deceleration", "value": 2.863, "tolerance": 0.02 },
+        { "kind": "metric", "quantity": "Heat load", "min": 9.63 },
+        { "kind": "metric", "quantity": "Downrange", "min": 2175 }
+      ]
+    },
+    {
+      "title": "Too shallow skips out",
+      "text": "Back from the Moon at 11 km/s the capsule is faster than orbital speed, and the curve of the Earth falls away beneath it. Too shallow, and it does not slow enough before its lift (and that extra speed) carries it back up and out, on a long arc through space. Make the entry angle −5.6° or shallower (try −5.5°) and run.",
+      "setup": { "preset": "Apollo-like lunar return", "tab": "Altitude–velocity" },
+      "check": { "kind": "metric", "quantity": "Skipped out", "min": 1, "success": "Skipped out: back above the entry altitude still at 8.6 km/s, on a long arc through space. Apollo would have been in trouble here. (At −5.7° it just stays in.)" },
+      "solution": { "params": { "gamma0": -5.5 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Skipped out", "min": 1 },
+        { "kind": "metric", "quantity": "Final speed", "value": 8585.5, "tolerance": 0.005 }
+      ]
+    },
+    {
+      "title": "The corridor",
+      "text": "Between skipping out and crushing g-loads lies the entry corridor. This capsule flies lift up through the first deceleration pulse, then rolls the lift sideways at 80 s (the Bank angle schedule). At −7.4° it pulls more than 10 g. Find an entry angle that neither skips out nor exceeds 10 g.",
+      "setup": { "preset": "Corridor: too steep (over 10 g)", "tab": "Deceleration" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "metric", "quantity": "Skipped out", "max": 0 },
+          { "kind": "metric", "quantity": "Peak deceleration", "max": 10 }
+        ],
+        "hint": "Try angles between −5.5° and −7.5°, a tenth of a degree at a time.",
+        "success": "The corridor is only about 1.4° wide here (−5.7° to −7.1°), which is why the Apollo navigators aimed for −6.5°. Near its shallow edge the flight is long and the heat load is highest, and the peak is not gentle either: the capsule climbs back toward space, then falls in steeply once its lift is rolled away (about 9 g at −5.7°, against 7 g at −6.5°)."
+      },
+      "solution": { "params": { "gamma0": -6.4 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Peak deceleration", "value": 7.0, "tolerance": 0.02 }
+      ]
+    }
+  ]
+}

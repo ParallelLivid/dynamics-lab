@@ -1,0 +1,66 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "quartercar-comfort",
+  "title": "Comfort or grip: tuning a suspension",
+  "simulator": "quartercar",
+  "order": 10,
+  "summary": "Find a car's two natural frequencies, drive over a speed bump, and tune the damper between comfort and road holding.",
+  "steps": [
+    {
+      "title": "Two natural frequencies",
+      "text": "A quarter car is two masses on two springs: the body on the suspension spring, and the wheel on the tire. So it has two modes. In body bounce the body moves on the soft suspension spring (about 1–1.5 Hz in a car, slow enough to feel comfortable). In wheel hop the light wheel bounces between the stiff tire and the suspension (10–15 Hz).\n\nRun the default car and open the Analyze ▸ Modes tab. Natural frequencies there are in rad/s, and include the damping: body bounce shows 7.9 rad/s (1.26 Hz). The Summary's 1.24 Hz is the undamped frequency.",
+      "setup": { "preset": "Passenger car over a speed bump (20 km/h)", "tab": "Modes" },
+      "check": { "kind": "modes", "mode": "Body bounce", "quantity": "NaturalFrequency", "min": 6.3, "max": 9.4, "success": "Body bounce near 1.2 Hz, wheel hop near 12 Hz: ten times apart, because the wheel is light and the tire stiff." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The speed bump",
+      "text": "Now watch the Animation and the Body acceleration tab. At 20 km/h the body rises gently over the 6 cm bump. Drive over it at 40 km/h instead: the wheel meets the bump in half the time, so the suspension has to work harder and more of the bump reaches the body.",
+      "setup": { "preset": "Passenger car over a speed bump (20 km/h)", "tab": "Body acceleration" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "speed", "min": 39 },
+          { "kind": "metric", "quantity": "Peak body acceleration", "min": 10 }
+        ],
+        "hint": "Set the speed to 40 km/h and run.",
+        "success": "The peak acceleration rises from about 8 to 12 m/s²: more than one g. The wheel even leaves the road for 0.05 s as it comes off the bump. Slow down for speed bumps!"
+      },
+      "solution": { "params": { "speed": 40 }, "run": true }
+    },
+    {
+      "title": "The damper trade-off",
+      "text": "The damper decides how the car handles the bump. The Analyze ▸ Sweep tab is set up to vary it from 200 to 6000 N·s/m at 20 km/h. Run the sweep and plot \"RMS body acceleration\" (comfort), then \"RMS dynamic tire load / static\" (how much the grip varies).\n\nA soft damper lets the body and wheel ring; a hard one passes the bump straight through. Each measure has a best damper: comfort a little below 1000 N·s/m (damping ratio about 0.17), road holding a little above (about 0.24). Real cars sit near or above that, around 0.3 like this one, because a stiffer damper also controls the body in corners and under braking.",
+      "setup": {
+        "preset": "Passenger car over a speed bump (20 km/h)",
+        "sweep": { "parameter": "cs", "from": 200, "to": 6000, "steps": 9, "log": true },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "cs", "minRuns": 6 },
+      "solution": { "sweep": true }
+    },
+    {
+      "title": "Worn dampers",
+      "text": "Old dampers lose most of their damping. Load the worn-damper car (300 N·s/m) at 40 km/h and run. At this speed the healthy car's wheel was off the road for 0.05 s; the Suspension travel and tire load tab shows the worn car's wheel bouncing so hard that it is off the road for more than three times as long, and still hopping after the bump. While it is in the air there is no grip for braking or steering.",
+      "setup": { "preset": "Worn dampers", "tab": "Suspension travel and tire load" },
+      "check": { "kind": "metric", "quantity": "Wheel left the road", "min": 1, "success": "The wheel is off the road for 0.17 s, and the tire load swings about twice as much (RMS dynamic load 0.42 of the static load, against 0.22): worn dampers are a safety problem, not just a comfort one." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Wheel hop resonance",
+      "text": "A wavy road excites the car at speed / wavelength. With 1.5 m waves at 64 km/h that is about 11.8 Hz, right on the wheel-hop frequency. Run it and look at Analyze ▸ Bode, set to Road height → Tire deflection: the Road line sits next to the wheel-hop marker, near the top of the peak. Then change the speed to 30 km/h and run again.",
+      "setup": { "preset": "Resonance: wheel hop", "bode": { "input": "Road height", "output": "Tire deflection" }, "tab": "Bode" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "speed", "max": 35 },
+          { "kind": "metric", "quantity": "Wheel left the road", "max": 0 }
+        ],
+        "hint": "Set the speed to 30 km/h and run.",
+        "success": "At 30 km/h the waves come at 5.6 Hz, away from both resonances: the same 1 cm waves now move the tire load a fifth as much, and the wheel stays on the road."
+      },
+      "solution": { "params": { "speed": 30 }, "run": true }
+    }
+  ]
+}

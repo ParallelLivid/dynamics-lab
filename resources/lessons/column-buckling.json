@@ -1,0 +1,67 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "column-buckling",
+  "title": "Why columns buckle",
+  "simulator": "column",
+  "order": 26,
+  "summary": "Euler's load and the length squared, end conditions, short columns that yield and long ones that buckle, imperfections, and the elastica.",
+  "steps": [
+    {
+      "title": "Euler's load and the length squared",
+      "text": "A 3 m steel tube, 60 mm across with a 4 mm wall, pinned at both ends. Euler found the load at which a straight column can bend sideways: P_cr = π² E I / L². Solve it and read P_cr in the Summary (about 61 kN).\n\nNow double the length to 6 m and solve again. The load falls with the length squared.",
+      "setup": { "preset": "Pinned steel tube", "tab": "End conditions" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "L", "min": 5.99, "max": 6.01 },
+          { "kind": "metric", "quantity": "Critical load P_cr", "min": 15, "max": 15.5 }
+        ],
+        "success": "15.2 kN: twice as long, a quarter of the load. Length is the enemy of a column."
+      },
+      "solution": { "params": { "L": 6 }, "run": true }
+    },
+    {
+      "title": "End conditions",
+      "text": "Back to 3 m. Fix both ends instead of pinning them. A fixed end stops the column turning, so it has to bend into a shorter wave: the buckled shape between its inflection points is only half as long (K = 0.5). The End conditions tab shows all four cases.",
+      "setup": { "preset": "Pinned steel tube", "params": { "endCondition": "fixedfixed" }, "tab": "End conditions" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "endCondition", "value": "fixedfixed" },
+          { "kind": "metric", "quantity": "Critical load P_cr", "min": 240, "max": 246 }
+        ],
+        "success": "243 kN, four times the pinned column. A flagpole (fixed–free, K = 2) gets a quarter of the pinned column's: 15.2 kN."
+      },
+      "solution": { "params": { "endCondition": "fixedfixed" }, "run": true }
+    },
+    {
+      "title": "Short columns yield, long ones buckle",
+      "text": "A 100 mm square timber post, 3 m tall and fixed at both ends. Its Euler load is about 400 kN, but the wood crushes at A σy = 210 kN first. Which one governs depends on the slenderness K L / r against π √(E/σy). Solve it and look at the Column curve.",
+      "setup": { "preset": "Fixed–fixed timber post", "tab": "Column curve" },
+      "check": { "kind": "metric", "quantity": "Buckling governs", "max": 0.5, "success": "Slenderness 52, below the limit of 72: a stocky column fails by crushing, not buckling." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Imperfections",
+      "text": "No real column is straight. A bow of 5 mm grows as e0 / (1 − P/P_cr): at 95 % of P_cr it is twenty times larger, and the bending stress it adds yields the steel well before P_cr. The Southwell plot turns such measured deflections into P_cr: Δ/P against Δ is a straight line of slope 1/P_cr.",
+      "setup": { "preset": "Imperfect column near P_cr", "tab": "Load–deflection" },
+      "check": { "kind": "metric", "quantity": "Amplification", "min": 19, "max": 21, "success": "Twenty times the bow, and 2.8 times the yield stress. The first-yield load (Stress check) is what a designer uses, not P_cr." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "The elastica: a buckled column still carries load",
+      "text": "Small-deflection theory says nothing past P_cr. Euler's elastica, θ'' + (P/EI) sin θ = 0, follows the perfect column as it bends far: the load keeps rising, slowly. At twice P_cr a pinned rod folds into a loop with its ends turned through about 125°.",
+      "setup": { "preset": "Elastica far past buckling", "tab": "Deflected shape" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "analysis", "value": "elastica" },
+          { "kind": "metric", "quantity": "Elastica end rotation", "min": 90 }
+        ],
+        "success": "P/P_cr = (2 K(k)/π)² with k = sin(α/2). Real metal would yield long before: try it with a plastic ruler."
+      },
+      "solution": { "params": { "analysis": "elastica" }, "run": true }
+    }
+  ]
+}

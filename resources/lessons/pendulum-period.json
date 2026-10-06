@@ -1,0 +1,61 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "pendulum-period",
+  "title": "How long does a swing take?",
+  "simulator": "pendulum",
+  "order": 1,
+  "summary": "Time a pendulum's swing, see how big swings slow it down, and compare with the small-angle formula.",
+  "steps": [
+    {
+      "title": "A small swing",
+      "text": "A pendulum's period is the time for one full swing, there and back. For small swings it is\n\n    T₀ = 2π √(L / g)\n\nwhich is about 2.006 s for a 1 m pendulum on Earth.\n\nLoad the setup (a 5° swing with no damping) and press Run. The Summary tab shows \"Period (measured)\", timed from the simulation itself.",
+      "setup": { "preset": "Small swing (5°)", "tab": "Angle & velocity" },
+      "check": {
+        "kind": "metric", "quantity": "Period (measured)", "min": 1.99, "max": 2.03,
+        "hint": "Load the setup, then press Run.",
+        "success": "About 2.006 s, just as the formula predicts."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A big swing",
+      "text": "Now start the pendulum at 150°, close to upside down, and run it again. Is the period still 2 s?\n\nThe setup also ticks \"Keep previous runs\", so the small swing stays on the plots for comparison.",
+      "setup": { "params": { "theta0": 150 }, "keepRuns": true },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "theta0", "min": 120, "hint": "Start from at least 120°." },
+          { "kind": "metric", "quantity": "Period (measured)", "min": 3 }
+        ],
+        "success": "About 3.5 s: large swings take noticeably longer, so the small-angle formula only holds for small angles."
+      },
+      "solution": { "params": { "theta0": 150 }, "run": true }
+    },
+    {
+      "title": "Period against amplitude",
+      "text": "Sweep the starting angle to see the whole curve. The Analyze ▸ Sweep tab is set up for 5° to 175°: press Run sweep and choose \"Period (measured)\" in the Plot list.\n\nNear 180° the period grows without limit. A pendulum balanced exactly upside down would wait there forever.",
+      "setup": {
+        "preset": "Small swing (5°)",
+        "sweep": { "parameter": "theta0", "from": 5, "to": 175, "steps": 18 },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "theta0", "minRuns": 10 },
+      "solution": { "sweep": true }
+    },
+    {
+      "title": "What the linear model says",
+      "text": "The Analyze ▸ Modes tab linearizes the pendulum about hanging straight down, θ'' ≈ −(g/L)·θ. The period of that \"Swing\" mode is the small-angle T₀.\n\nMake the pendulum 4 m long (Length, in the Pendulum section) and run it. The Analyze ▸ Modes tab should now predict a period twice as long, about 4.01 s, because T₀ grows with √L.",
+      "setup": { "preset": "Small swing (5°)", "tab": "Modes" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "L", "min": 3.99, "max": 4.01 },
+          { "kind": "modes", "mode": "Swing", "quantity": "Period", "min": 3.95, "max": 4.08 }
+        ],
+        "success": "Four times the length, twice the period."
+      },
+      "solution": { "params": { "L": 4 }, "run": true }
+    }
+  ]
+}

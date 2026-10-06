@@ -1,0 +1,53 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "frame-beams",
+  "title": "Beams and frames",
+  "simulator": "frame",
+  "order": 19,
+  "summary": "How supports change the bending moment in a beam, and how a frame sways under a side load.",
+  "steps": [
+    {
+      "title": "The cantilever",
+      "text": "A 4 m steel cantilever (an IPE 300 section: I = 8356 cm⁴) carries 10 kN at its tip. Beam theory says the tip deflects δ = P L³ / 3 E I. Run it and compare the Max displacement in the Summary; the Bending moment tab shows the moment growing linearly to P L = 40 kN·m at the wall.",
+      "setup": { "preset": "Cantilever with tip load", "tab": "Deflected shape" },
+      "check": { "kind": "metric", "quantity": "Max displacement", "min": 12.6, "max": 12.9, "success": "12.77 mm, exactly P L³ / 3 E I." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Simply supported",
+      "text": "A 6 m beam on a pin and a roller under 5 kN/m. The moment is a parabola, largest at mid-span: w L² / 8. Run it and read Max |M|.",
+      "setup": { "preset": "Simply supported beam (UDL)", "tab": "Bending moment" },
+      "check": { "kind": "metric", "quantity": "Max |M|", "min": 22.4, "max": 22.6, "success": "22.5 kN·m = 5 × 6² / 8." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Fix the ends",
+      "text": "Build the same beam into walls at both ends. The ends now resist rotation, which lifts the whole moment diagram: hogging moments at the walls, a smaller sagging moment in the middle, and the largest moment drops to w L² / 12.",
+      "setup": { "preset": "Fixed-end beam", "tab": "Bending moment" },
+      "check": { "kind": "metric", "quantity": "Max |M|", "min": 14.9, "max": 15.1, "success": "15 kN·m at the walls, 7.5 kN·m at mid-span, and a fifth of the deflection." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A portal frame sways",
+      "text": "A frame resists a side load (wind) through the bending of its columns and beam, joined rigidly at the corners. Run the portal frame and look at the Deflected shape: it leans over, and the corners stay square.",
+      "setup": { "preset": "Portal frame (wind load)", "tab": "Deflected shape" },
+      "check": { "kind": "metric", "quantity": "Max displacement", "min": 1, "success": "A few millimetres of sway, with moments at the bases and corners." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Change the shape",
+      "text": "On the Model tab, drag a top corner of the portal frame up or sideways (it snaps to 0.5 m), then run again and watch the moment diagram change. Each drag is one step you can undo.",
+      "setup": { "preset": "Portal frame (wind load)", "tab": "Model" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "nodes", "min": 4 },
+          { "kind": "run" }
+        ],
+        "success": "Taller columns sway more; a sloping beam carries some load by axial force."
+      },
+      "solution": { "params": { "nodes": [[0, 0], [0, 5], [6, 4], [6, 0]] }, "run": true }
+    }
+  ]
+}

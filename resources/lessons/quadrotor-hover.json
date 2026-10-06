@@ -1,0 +1,84 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "quadrotor-hover",
+  "title": "Keeping a quadrotor in the air",
+  "simulator": "quadrotor",
+  "order": 29,
+  "summary": "Hover thrust, how rotor limits cap a climb, and what a motor failure does to a quadcopter.",
+  "steps": [
+    {
+      "title": "A quarter of the weight each",
+      "text": "To hover, the four rotors together must carry the weight m g, so each one gives m g / 4. Here the quadrotor starts tilted 20° and its controller levels it; on the Rotor thrusts tab every rotor settles on the dotted hover line.\n\nMake the quadrotor heavier: set the Mass to 1.5 kg and run. What does each rotor carry now?",
+      "setup": { "preset": "Hover (recover from a 20° tilt)", "tab": "Rotor thrusts" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "m", "min": 1.5, "max": 1.5 },
+          { "kind": "metric", "quantity": "Hover thrust per rotor", "min": 3.67, "max": 3.69 }
+        ],
+        "success": "1.5 × 9.81 / 4 = 3.68 N per rotor. The thrust-to-weight ratio fell from 2.4 to 1.6: less thrust left over to manoeuvre."
+      },
+      "solution": { "params": { "m": 1.5 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Hover thrust per rotor", "value": 3.67875, "tolerance": 0.001 },
+        { "kind": "metric", "quantity": "Thrust-to-weight ratio", "value": 1.631, "tolerance": 0.005 }
+      ]
+    },
+    {
+      "title": "Rotors at their limit",
+      "text": "This quadrotor's rotors give at most 3.5 N each: a thrust-to-weight ratio of only 1.43. Asked to climb 17 m, the height loop wants far more thrust than that.\n\nRun it and look at the Rotor thrusts tab: the shaded band is where the mixer is saturated. How long does it stay there?",
+      "setup": { "preset": "Saturated climb (3 → 20 m)", "tab": "Rotor thrusts" },
+      "check": { "kind": "metric", "quantity": "Time saturated", "min": 1, "success": "More than 2 s at full thrust: the climb is limited by the motors, not the controller. Its acceleration is only (4 Tmax − m g) / m ≈ 4.2 m/s²." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Time saturated", "value": 2.38, "tolerance": 0.02 }
+      ]
+    },
+    {
+      "title": "More thrust, faster climb",
+      "text": "Raise the Rotor thrust limit to 6 N and run again. Watch the Position tab: the climb gets steeper, and the rotors are saturated for less time.",
+      "setup": { "preset": "Saturated climb (3 → 20 m)", "tab": "Position" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "Tmax", "min": 6 },
+          { "kind": "metric", "quantity": "Settling time", "max": 2.5 }
+        ],
+        "success": "It settles in about 2 s instead of 3.3 s. The gains did not change: the extra speed came only from the motors."
+      },
+      "solution": { "params": { "Tmax": 6 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Settling time", "value": 2.0, "tolerance": 0.05 }
+      ]
+    },
+    {
+      "title": "A motor stops",
+      "text": "At t = 2 s rotor 1 (front-left) stops. To stay level, the controller must slow rotor 3, its diagonal partner. But rotors 1 and 3 both spin clockwise: now the counter-clockwise pair's drag torque is no longer balanced, and nothing can stop the yaw.\n\nRun it and look at the Attitude tab and the Animation.",
+      "setup": { "preset": "Motor failure (rotor 1 stops at 2 s)", "tab": "Attitude" },
+      "check": { "kind": "metric", "quantity": "Max yaw rate", "min": 180, "success": "Hundreds of degrees per second. The mixer gives up yaw first, so the spin grows until roll and pitch are lost too, and the quadrotor crashes." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Max yaw rate", "value": 370.8, "tolerance": 0.01 }
+      ]
+    },
+    {
+      "title": "A damaged rotor",
+      "text": "Not every failure is total. Set Thrust left to 0.5 (a chipped propeller) and run. Does it stay in the air?",
+      "setup": { "preset": "Motor failure (rotor 1 stops at 2 s)", "tab": "Animation" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "failScale", "min": 0.4 },
+          { "kind": "metric", "quantity": "Final height", "min": 9 }
+        ],
+        "success": "It survives: the other rotors make up the lost thrust, and the yaw controller still has enough torque left to hold a slow turn. It drifts, but it flies."
+      },
+      "solution": { "params": { "failScale": 0.5 }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Final height", "value": 9.649, "tolerance": 0.01 },
+        { "kind": "metric", "quantity": "Max yaw rate", "value": 15.43, "tolerance": 0.02 }
+      ]
+    }
+  ]
+}

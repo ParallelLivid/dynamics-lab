@@ -1,0 +1,38 @@
+{
+  "format": "dynamicslab-bodies",
+  "formatVersion": 1,
+  "bodies": {
+    "Earth": {
+      "color": {
+        "file": "earth-color.jpg",
+        "width": 1024,
+        "height": 512,
+        "source": "NASA Blue Marble Next Generation (public domain), via the basemap-data package"
+      },
+      "elevation": {
+        "file": "earth-elevation.png",
+        "width": 360,
+        "height": 180,
+        "scale": 1,
+        "offset": -11000,
+        "min": -6767.835071799062,
+        "max": 5637.525029615532,
+        "source": "SRTMP topography to degree 90 (Wieczorek; SRTM, public domain), SHTOOLS example data (BSD-3-Clause)",
+        "reference": "mean sea level"
+      }
+    },
+    "Mars": {
+      "elevation": {
+        "file": "mars-elevation.png",
+        "width": 360,
+        "height": 180,
+        "scale": 1,
+        "offset": -12000,
+        "min": -6862.147619632562,
+        "max": 22489.088083533956,
+        "source": "MarsTopo719 to degree 90 (Wieczorek 2015; MOLA, public domain), SHTOOLS example data (BSD-3-Clause)",
+        "reference": "mean radius, without the degree-2 zonal flattening"
+      }
+    }
+  }
+}

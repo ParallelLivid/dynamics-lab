@@ -1,0 +1,61 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "pendulum-fit-damping",
+  "title": "Measuring a pendulum's damping",
+  "simulator": "pendulum",
+  "order": 35,
+  "summary": "Fit a model to a measured swing: find the damping, then see what a wrong length does to the residuals.",
+  "steps": [
+    {
+      "title": "A measured swing",
+      "text": "This setup loads a measured swing of a 1 m pendulum released from 30°: 15 seconds of angle readings, 20 per second, with a little measurement noise.\n\nThe model on the left guesses a damping of 0.3 N·m·s. Run it, then open Analyze ▸ Custom plot and plot angle against time: the measured points are drawn over the model's curve. The model dies away far faster than the real pendulum.",
+      "setup": {
+        "preset": "Defaults",
+        "params": { "model": "single", "L": 1, "m": 1, "b": 0.3, "theta0": 30, "omega0": 0, "tspan": 15 },
+        "measured": "pendulum-swing.csv",
+        "tab": "Custom plot"
+      },
+      "check": { "kind": "run", "success": "The measured swing barely decays; the model's swing is nearly gone by 15 s." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Fit the damping",
+      "text": "The Analyze ▸ Fit tab adjusts inputs until the model's angle matches the measured angle as closely as it can (least squares on the samples). It is set up to fit the damping b.\n\nPress Fit and watch the misfit fall.",
+      "setup": { "fit": { "measured": "angle", "simulated": "angle", "inputs": ["b"] }, "tab": "Fit" },
+      "check": { "kind": "fit", "inputs": ["b"], "input": "b", "min": 0.045, "max": 0.055,
+                 "hint": "Make sure the fit varies Damping and that it finished (not cancelled).",
+                 "success": "b ≈ 0.050 N·m·s, with a standard error of about 0.0002. The residuals left over are the measurement noise, about 0.3° RMS: the model now explains everything else." },
+      "solution": { "fit": true }
+    },
+    {
+      "title": "A wrong model",
+      "text": "Now suppose the length had been mismeasured as 1.2 m. Fit the damping again with that length.\n\nLook at the residuals under the plot: they are no longer noise. They grow into a slow wave, because the model swings with the wrong period and drifts out of step.",
+      "setup": { "params": { "L": 1.2, "b": 0.3 }, "fit": { "measured": "angle", "simulated": "angle", "inputs": ["b"] }, "tab": "Fit" },
+      "check": { "kind": "fit", "inputs": ["b"], "min": 5,
+                 "hint": "Set the length to 1.2 m and fit only the damping.",
+                 "success": "The best damping cannot fix a wrong period: the misfit stays far above the noise (about 16° RMS), and the fitted b is meaningless. Patterned residuals are the sign of a wrong model." },
+      "solution": { "params": { "L": 1.2, "b": 0.3 }, "fit": true }
+    },
+    {
+      "title": "Fit the length too",
+      "text": "Add the length to the inputs being fitted, so the fit adjusts both, and fit again.",
+      "setup": { "params": { "L": 1.2, "b": 0.3 }, "fit": { "measured": "angle", "simulated": "angle", "inputs": ["L", "b"] }, "tab": "Fit" },
+      "check": { "kind": "fit", "inputs": ["L", "b"], "input": "L", "min": 0.98, "max": 1.02,
+                 "hint": "Fit both Length and Damping.",
+                 "success": "L ≈ 1.000 m and b ≈ 0.050 N·m·s again, and the residuals are back to noise. The period pins down the length; the decay pins down the damping." },
+      "solution": { "params": { "L": 1.2, "b": 0.3 }, "fit": true }
+    },
+    {
+      "title": "What the residuals tell you",
+      "text": "After a fit, which residuals mean the model is right?",
+      "check": { "kind": "choice",
+                 "options": ["Small, random scatter about zero, the size of the measurement noise",
+                             "Any residuals smaller than the signal",
+                             "Residuals that are exactly zero"],
+                 "answer": 1,
+                 "success": "Right: a good model leaves only noise. A pattern in the residuals (a wave, a trend) means something in the model is wrong, however small the misfit looks." },
+      "solution": { "answer": 1 }
+    }
+  ]
+}

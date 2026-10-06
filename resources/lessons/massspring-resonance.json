@@ -1,0 +1,57 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "massspring-resonance",
+  "title": "Resonance",
+  "simulator": "massspring",
+  "order": 2,
+  "summary": "Push a mass on a spring at its natural frequency, watch the response grow, and tame it with damping.",
+  "steps": [
+    {
+      "title": "Pushing near the natural frequency",
+      "text": "This 1 kg mass on a 10 N/m spring has a natural frequency ωn = √(k/m) ≈ 3.16 rad/s. Here a force pushes it at ωf = 3 rad/s, close to ωn.\n\nLoad the setup and press Run. The Summary shows the magnification: how many times larger the steady swing is than the stretch the same force would cause if it were held steady.",
+      "setup": { "preset": "Forced near resonance", "tab": "Kinematics" },
+      "check": {
+        "kind": "metric", "quantity": "Magnification at ωf", "min": 5, "max": 6,
+        "hint": "Load the setup, then press Run.",
+        "success": "About 5.5: pushing near ωn already makes the swing several times larger."
+      },
+      "solution": { "run": true }
+    },
+    {
+      "title": "Hit resonance",
+      "text": "Set the forcing frequency ωf to match ωn, 3.16 rad/s, and run again. How large does the magnification get?",
+      "check": {
+        "kind": "metric", "quantity": "Magnification at ωf", "min": 6.2,
+        "hint": "Set Frequency ωf (in the Forcing section) to 3.16 rad/s.",
+        "success": "With light damping, resonance multiplies the response by 1/(2ζ) ≈ 6.3."
+      },
+      "solution": { "params": { "omega_f": 3.16 }, "run": true }
+    },
+    {
+      "title": "Damping tames resonance",
+      "text": "Keep ωf at 3.16 rad/s and raise the damping c until the magnification falls below 2.\n\nThis is why car suspensions and tall buildings have dampers.",
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "omega_f", "min": 3.1, "max": 3.22, "hint": "Keep ωf at resonance." },
+          { "kind": "metric", "quantity": "Magnification at ωf", "max": 2, "hint": "Increase Damping c." }
+        ],
+        "success": "At resonance the magnification is 1/(2ζ), so more damping means a smaller peak."
+      },
+      "solution": { "params": { "omega_f": 3.16, "c": 2 }, "run": true }
+    },
+    {
+      "title": "The whole response curve",
+      "text": "The Frequency response tab plots the magnification against ωf/ωn. To see the same thing in the time response, sweep the forcing frequency: the Analyze ▸ Sweep tab is set for ωf from 1 to 6 rad/s. Run it and plot \"Peak displacement\".",
+      "setup": {
+        "preset": "Forced near resonance",
+        "params": { "t_end": 20 },
+        "sweep": { "parameter": "omega_f", "from": 1, "to": 6, "steps": 21 },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "omega_f", "minRuns": 15 },
+      "solution": { "sweep": true }
+    }
+  ]
+}

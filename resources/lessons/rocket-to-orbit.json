@@ -1,0 +1,73 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "rocket-to-orbit",
+  "title": "Rocket to orbit",
+  "simulator": "rocket",
+  "order": 18,
+  "summary": "The rocket equation, gravity and drag losses, max-Q and the throttle bucket, and why rockets have stages.",
+  "steps": [
+    {
+      "title": "The rocket equation",
+      "text": "A rocket gains speed by throwing mass backward. With exhaust speed g₀ Isp, burning from mass m₀ down to m_f gives at most\n\n    Δv = g₀ Isp ln(m₀ / m_f)\n\n(Tsiolkovsky). This sounding rocket starts at 1600 kg and burns out at 400 kg, with Isp 260 s. Run it and compare the Ideal Δv in the Summary with 9.81 × 260 × ln 4.",
+      "setup": { "preset": "Sounding rocket (single stage, vertical)", "tab": "Altitude and speed" },
+      "check": { "kind": "metric", "quantity": "Ideal Δv (Tsiolkovsky)", "min": 3500, "max": 3570, "success": "3535 m/s ideal, but it burns out well below that: gravity takes about 9.8 m/s for every second of a vertical climb." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Ideal Δv (Tsiolkovsky)", "value": 3534.67, "tolerance": 0.001 },
+        { "kind": "metric", "quantity": "Gravity loss", "value": 498.7, "tolerance": 0.01 }
+      ]
+    },
+    {
+      "title": "Gravity losses",
+      "text": "A launcher must climb out of the air but then go sideways fast. Rising too steeply wastes Δv holding the rocket up against gravity; pitching over too early drags it through thick air. The Analyze ▸ Sweep tab varies the pitch-over angle from 3° to 14°. Run the sweep and plot \"Gravity loss\" and \"Drag loss\" (and \"Orbit achieved\").",
+      "setup": {
+        "preset": "Small launcher to LEO (2 stages)",
+        "sweep": { "parameter": "kickAngle", "from": 3, "to": 14, "steps": 12 },
+        "tab": "Sweep"
+      },
+      "check": { "kind": "sweep", "parameter": "kickAngle", "minRuns": 8 },
+      "solution": { "sweep": true }
+    },
+    {
+      "title": "Max-Q",
+      "text": "The dynamic pressure q = ½ ρ v² is the aerodynamic load on the rocket. It grows as the rocket speeds up and falls as the air thins, so it peaks once: max-Q. Run the launcher and look at the Dynamic pressure tab.",
+      "setup": { "preset": "Small launcher to LEO (2 stages)", "tab": "Dynamic pressure" },
+      "check": { "kind": "metric", "quantity": "Max-Q altitude", "min": 8, "max": 15, "success": "About 11 km up, a minute into the flight, as for most launchers." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Max-Q altitude", "value": 11.04, "tolerance": 0.03 },
+        { "kind": "metric", "quantity": "Max-Q time", "value": 62, "tolerance": 0.05 }
+      ]
+    },
+    {
+      "title": "The throttle bucket",
+      "text": "Rockets throttle down through max-Q to stay within their structural limits. This preset throttles to 70 % between 40 and 75 s. Run it and compare the Max-Q with the 37 kPa the same flight (pitching over by 5°) reaches at full throttle.",
+      "setup": { "preset": "Max-Q throttle bucket", "tab": "Dynamic pressure" },
+      "check": { "kind": "metric", "quantity": "Max-Q", "max": 37, "success": "Max-Q falls by about 40 %, and the rocket still makes orbit." },
+      "solution": { "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Max-Q", "value": 23.06, "tolerance": 0.02 },
+        { "kind": "metric", "quantity": "Orbit achieved", "min": 1 }
+      ]
+    },
+    {
+      "title": "Why stages?",
+      "text": "Carrying empty tanks all the way to orbit wastes Δv. With only the first stage (delete the second row of the Stages table and run), the rocket cannot reach orbit, even though it has most of the propellant (400 of 492 t). Then load the two-stage launcher again and run: dropping the empty first stage makes the difference.",
+      "setup": { "preset": "Small launcher to LEO (2 stages)", "params": { "stages": [[22000, 400000, 8200, 311, 282, 0]] }, "tab": "Δv budget" },
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "stages", "min": 2 },
+          { "kind": "metric", "quantity": "Orbit achieved", "min": 1 }
+        ],
+        "hint": "Load the Small launcher to LEO preset (two stages) and run.",
+        "success": "In orbit: the second stage only has to push itself and the payload."
+      },
+      "solution": { "params": { "stages": [[22000, 400000, 8200, 311, 282, 0], [4000, 92000, 700, 348, 300, 3]] }, "run": true },
+      "claims": [
+        { "kind": "metric", "quantity": "Orbit achieved", "min": 1 }
+      ]
+    }
+  ]
+}

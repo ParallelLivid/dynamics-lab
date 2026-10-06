@@ -1,0 +1,55 @@
+name: Release
+
+# Push a version tag (git tag v1.4.0 && git push origin v1.4.0) to package the
+# toolbox and attach it to that tag's GitHub release, creating the release if
+# it does not exist yet. File Exchange, when linked to the repository, picks
+# up each new release.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build and attach the toolbox to (e.g. v1.4.0)
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  toolbox:
+    name: Package the toolbox (MATLAB R2025b)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2025b
+
+      - name: Build the toolbox
+        uses: matlab-actions/run-build@v3
+        env:
+          MLM_LICENSE_TOKEN: ${{ secrets.MLM_LICENSE_TOKEN }}
+        with:
+          tasks: toolbox
+
+      - name: Attach it to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          file=dist/toolbox/DynamicsLab.mltbx
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "$file" --clobber
+          else
+            gh release create "$TAG" "$file" --title "Dynamics Lab ${TAG#v}" --generate-notes --verify-tag
+          fi

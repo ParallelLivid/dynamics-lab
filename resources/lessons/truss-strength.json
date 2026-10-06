@@ -1,0 +1,45 @@
+{
+  "format": "dynamicslab-lesson",
+  "formatVersion": 1,
+  "id": "truss-strength",
+  "title": "Will it hold?",
+  "simulator": "truss",
+  "order": 20,
+  "summary": "Check a steel footbridge and a timber roof: stress against yield, compression against buckling, and the safety factor.",
+  "steps": [
+    {
+      "title": "A footbridge that buckles",
+      "text": "A 15 m Pratt footbridge in steel tubes: 88.9 mm chords (section S1) and a 60.3 mm web (S2), with 40 kN at each deck node. Solve it.\n\nThe members are coloured by utilization: each member's stress against its yield stress and, if it is pushed, its force against the load that would buckle it (Euler: π²EI/L²). Above 1 it fails. Which members fail, and how? (The Member forces tab says.)",
+      "setup": { "preset": "Footbridge check (steel tubes)", "tab": "Model" },
+      "check": { "kind": "metric", "quantity": "Fail by buckling", "min": 1, "success": "The long, slender web posts buckle: a pushed member fails long before its steel yields." },
+      "solution": { "run": true }
+    },
+    {
+      "title": "A stiffer web",
+      "text": "Buckling depends on I, the second moment of area, not just on the area: a wider tube resists it much better. In the Sections tab, change S2's outer size D from 60.3 to 76.1 mm (A and I are recomputed), and solve again.",
+      "setup": { "preset": "Footbridge check (steel tubes)", "tab": "Model" },
+      "check": { "kind": "metric", "quantity": "Members that fail", "max": 0, "hint": "Sections tab: set S2's D to 76.1, then Solve.", "success": "Every member holds. 28 % more steel in the web roughly doubled its buckling load." },
+      "solution": { "params": { "sections": [[1, 1, 200, 250, 88.9, 4, 10.6688, 96.3398], [1, 1, 200, 250, 76.1, 3.2, 7.32868, 48.7785], [1, 1, 200, 250, 76.1, 3.2, 7.32868, 48.7785]] }, "run": true }
+    },
+    {
+      "title": "The safety factor",
+      "text": "The Summary's safety factor is 1 divided by the largest utilization: how many times the load could grow before the first member reaches its limit. Because the truss is linear, setting the Load scale to that number puts the critical member exactly at 1.\n\nSet the Load scale to the safety factor and solve.",
+      "check": {
+        "kind": "all",
+        "checks": [
+          { "kind": "input", "name": "loadScale", "min": 1.2 },
+          { "kind": "metric", "quantity": "Largest utilization", "min": 0.98, "max": 1.02 }
+        ],
+        "success": "Exactly at the limit. Real designs keep a margin: codes ask for a safety factor of about 1.5 or more."
+      },
+      "solution": { "params": { "loadScale": 1.296 }, "run": true }
+    },
+    {
+      "title": "Timber",
+      "text": "Timber is much less stiff than steel (E = 11 GPa against 200), so its members buckle at a far lower load. This Fink roof truss is made of 75 mm square C24 timber, under a heavy snow load. Solve it, then give every member section S2 (100 mm) in the Members table and solve again.",
+      "setup": { "preset": "Timber roof check (Fink)", "tab": "Model" },
+      "check": { "kind": "metric", "quantity": "Members that fail", "max": 0, "hint": "In the Members table, set each member's Section to 2.", "success": "100 mm timber holds: I grows as the fourth power of the size, so 33 % more width gives 3.2 times the buckling load." },
+      "solution": { "params": { "members": [[1, 6, 2], [6, 2, 2], [1, 4, 2], [4, 3, 2], [2, 5, 2], [5, 3, 2], [4, 6, 2], [5, 6, 2], [3, 6, 2]] }, "run": true }
+    }
+  ]
+}

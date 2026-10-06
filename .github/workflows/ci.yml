@@ -17,7 +17,7 @@ jobs:
     # The Code Analyzer and every test that does not open a window: quick
     # feedback on engines, physics, and core logic.
     name: Check and fast tests (MATLAB R2025b)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04    # pinned: ubuntu-latest moves to 26.04 on 2026-10-19
     timeout-minutes: 30
 
     steps:
@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fast-test-results
           path: test-results/
@@ -51,7 +51,7 @@ jobs:
     # as the five parts of buildfile.m's testParts, run side by side.
     name: Tests, ${{ matrix.part }} (MATLAB R2025b)
     needs: fast
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04    # pinned: ubuntu-latest moves to 26.04 on 2026-10-19
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.part }}
           path: test-results/

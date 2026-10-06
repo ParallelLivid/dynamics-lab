@@ -206,9 +206,12 @@ classdef (TestTags = {'ui'}) TestAnalysis < matlab.unittest.TestCase
             file = fullfile(temp.Folder, "grid.gif");
             info = dlab.core.AnimationExporter.write(file, "gif", draw, grid, 0, 1, MaxFrames=3);
             testCase.verifyEqual(info.Frames, 3);
-            frame = gifFrame(file, 3);
-            testCase.verifyEqual(size(frame, [1 2]), [400 640], "The whole grid.");
-            % Inside the main view (upper right) and inside the inset (lower left).
+            testCase.verifyEqual(size(gifFrame(file, 3), [1 2]), [400 640], "The whole grid.");
+            % Inside the main view (upper right) and inside the inset (lower
+            % left), read from the first frame: it uses the file's global
+            % colour table, while later frames have local ones, which MATLAB
+            % on Linux decoded with the wrong table (both pixels came out grey).
+            frame = gifFrame(file, 1);
             testCase.verifyEqual(squeeze(frame(100, 400, :))', [0 0 1], "Main view", AbsTol=0.05);
             testCase.verifyEqual(squeeze(frame(345, 90, :))', [1 0 0], "Inset", AbsTol=0.05);
 

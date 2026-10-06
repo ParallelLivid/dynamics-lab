@@ -155,7 +155,12 @@ classdef ManeuversPlugin < dlab.core.TimeDomainPlugin
                 plot(ax, inPlane(rows, 1), inPlane(rows, 2), Color=t.series(k), LineWidth=1.5, ...
                     DisplayName=segmentName(k, numel(segments), r.burnLog(1).time > r.t(1)));
             end
-            scale = 0.15 * max(sqrt(sum(inPlane.^2, 2))) / max([arrayfun(@(b) norm(b.dvInertial), r.burnLog), eps]);
+            reach = max(sqrt(sum(inPlane.^2, 2)));
+            scale = 0.15 * reach / max([arrayfun(@(b) norm(b.dvInertial), r.burnLog), eps]);
+            % Burns at the same place (phasing burns again where it started)
+            % share one label, a line each, rather than printing over each other.
+            spots = zeros(0, 2);
+            labels = {};
             for k = 1:numel(r.burnLog)
                 b = r.burnLog(k);
                 at = b.r * basis;
@@ -164,7 +169,17 @@ classdef ManeuversPlugin < dlab.core.TimeDomainPlugin
                     HandleVisibility="off");
                 plot(ax, at(1) + [0 arrow(1)], at(2) + [0 arrow(2)], Color=t.Warning, LineWidth=2, ...
                     HandleVisibility="off");
-                text(ax, at(1), at(2), sprintf("  %d: %.3f km/s", k, norm(b.dvLocal)), Color=t.Text, ...
+                entry = sprintf("  %d: %.3f km/s", k, norm(b.dvLocal));
+                same = find(vecnorm(spots - at(1:2), 2, 2) < 1e-3 * reach, 1);
+                if isempty(same)
+                    spots(end+1, :) = at(1:2); %#ok<AGROW>
+                    labels{end+1} = entry; %#ok<AGROW>
+                else
+                    labels{same}(end+1) = entry; %#ok<AGROW>
+                end
+            end
+            for k = 1:numel(labels)
+                text(ax, spots(k, 1), spots(k, 2), cellstr(labels{k}), Color=t.Text, ...
                     FontSize=t.FontSize.sm, VerticalAlignment="bottom");
             end
             if ~isempty(r.target)

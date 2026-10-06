@@ -82,6 +82,7 @@ result.
 | 1 | Summary | When the intermediate apoapsis lies inside the target (the lunar transfer: 100 000 km against 384 400 km) there is no bi-elliptic transfer, but the planner clamped r_b to r₂ and reported its Hohmann: "Bi-elliptic saving 0 km/s", and an Alternatives bar equal to the Hohmann's. | No bi-elliptic alternative then: no row and no bar. | `noBiellipticInsideTheTarget` |
 | 2 | Summary | "Final a error" had "relative" in the units column. | "Final a error (relative)", no units. | `noBiellipticInsideTheTarget`, `hohmannToGeo` |
 | 3 | Inputs | The maneuver choices were cut off ("Hohmann tra…", "Hohmann with plane change"), and seven inputs had no tooltip. | "Hohmann", "Bi-elliptic", "Plane", "Combined", "Phasing", "Custom", explained in the tooltip; tooltips for the body, inclinations, target altitude, revolutions, coasting and the output step. | `inputsFitAndExplainThemselves` |
+| 4 | Outputs | Phasing burns twice at the same point (one lap apart), so the Transfer plot printed "1: 0.093 km/s" and "2: 0.093 km/s" exactly over each other. Found by CI on Linux; the Windows run of the same check had missed it. | Burns at the same place share one label, a line each. | `PluginConformanceTest/plotsReadAtEveryPreset` |
 
 Accepted:
 - **The Elements tab's three plots are not exactly aligned** (the y tick labels differ in width);

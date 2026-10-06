@@ -229,7 +229,10 @@ classdef PluginConformanceTest < matlab.unittest.TestCase
             % A choice's label must fit the input panel's 118-pixel field: at
             % the normal text size about 85 px of text show before the "..."
             % (measured: "Crank-Nicolson", 85 px, fits; "Single pendulum",
-            % 89.5 px, was cut to "Single pendul...").
+            % 89.5 px, was cut to "Single pendul..."). Fonts standing in for
+            % Helvetica measure up to a pixel apart between platforms
+            % ("Newton's cradle": 85.0 px on Windows, 86.0 on Linux), so the
+            % check allows one pixel over 85.
             plugin = feval(PluginClass);
             fig = figure(Visible="off");
             testCase.addTeardown(@delete, fig);
@@ -242,7 +245,7 @@ classdef PluginConformanceTest < matlab.unittest.TestCase
                 for label = reshape(spec.ChoiceLabels, 1, [])
                     h = text(ax, 0, 0, label, Units="pixels", FontUnits="pixels", FontSize=size, ...
                         FontName="Helvetica", Interpreter="none");
-                    testCase.verifyLessThanOrEqual(h.Extent(3), 85, sprintf("%s: ""%s"" is %.0f px wide; " + ...
+                    testCase.verifyLessThanOrEqual(round(h.Extent(3)), 86, sprintf("%s: ""%s"" is %.0f px wide; " + ...
                         "shorten it and explain in the Description.", spec.Name, label, h.Extent(3)));
                     delete(h);
                 end

@@ -193,7 +193,8 @@ and keeps scenario files and plugin API v1 compatible.
 - Orbital Maneuvers (verified): no bi-elliptic alternative (Summary row or bar) when its
   apoapsis lies inside the target orbit (the lunar transfer showed a "saving" of 0); "Final a
   error (relative)" keeps units out of the units column; the maneuver choices fit and every input
-  has a tooltip.
+  has a tooltip; phasing's two burns, at the same point, share one label instead of printing over
+  each other.
 - Gravity Assist (verified): the lesson's figure for how much Jupiter slows (6 × 10⁻²¹ m/s for
   Voyager's 722 kg); the pass choices fit and every input has a tooltip. Changing a display option
   while the animation plays no longer floods the Command Window with "Invalid or deleted object"

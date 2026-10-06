@@ -79,7 +79,7 @@ while before it settles on the cycle), Rössler at c = 2.5 (period-1), 3.5 (peri
 | Lorenz σ = 10, ρ = 28, β = 8/3, 1000 time units | λ = 0.9056 ± 0.02 (Sprott 2003) |
 | Lorenz ρ = 14 | settles exactly on C+ = (√(8/3·13), √(8/3·13), 13); λ < 0 |
 | Rössler a = b = 0.2 | c = 2.5, 3.5, 4.0: 1, 2, 4 distinct maxima (period doubling); c = 5.7: λ = 0.0714 ± 0.01 |
-| Chua α = 15.6, β = 28, m0 = −1.143, m1 = −0.714, 1000 time units | equilibria at 0 and ±(1.5, 0, −1.5); both scrolls visited; λ = 0.43 ± 0.03 (independent integration, [verification sheet](../verification/attractors.md)) |
+| Chua α = 15.6, β = 28, m0 = −1.143, m1 = −0.714, 1000 time units | equilibria at 0 and ±(1.5, 0, −1.5); both scrolls visited; λ = 0.43 ± 0.04 (independent integration, [verification sheet](../verification/attractors.md)) |
 | Lorenz maxima of z from (1, 1, 1) | the first twelve agree with an independent integration to 10⁻⁶ at output steps 0.01, 0.05, and 0.2 |
 | Lorenz ρ = 160, second half of 60 time units | a cycle with two maxima of z, 188.6584 and 216.6342; λ ≈ 0 |
 | A centre (Rössler with a = b = 0) | λ = 0 within 10⁻³: the tangent method, not the twins |

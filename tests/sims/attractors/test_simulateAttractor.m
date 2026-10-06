@@ -124,11 +124,13 @@ end
 function testChuaExponent(testCase)
 % Independent integration (Benettin with QR, 3000 time units): λ1 = 0.428
 % at these constants (0.437 at m0 = −8/7, m1 = −5/7); the spectrum
-% (0.428, 0, −4.23).
+% (0.428, 0, −4.23). Over 1000 units the estimate spreads 0.414–0.463 with
+% the start, and round-off differs between platforms (0.435 on Windows,
+% 0.463 on Linux CI), so the tolerance spans that spread.
 p = base('chua');
 [p.x0, p.y0, p.z0, p.tspan] = deal(0.7, 0, 0, 1000);
 r = dlab.sims.attractors.simulateAttractor(p);
-verifyEqual(testCase, r.lambda, 0.43, 'AbsTol', 0.03);
+verifyEqual(testCase, r.lambda, 0.43, 'AbsTol', 0.04);
 end
 
 function testLorenzPeriodicWindow(testCase)
